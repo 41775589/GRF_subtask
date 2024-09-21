@@ -1,0 +1,7 @@
+Write the scenario setting function for the following task.
+The subtask is {training_goal}, and the number of agents you are training in this subtask is {number_of_agents}.
+Make sure your function name is "def build_scenario(builder)" and strictly follows the structure of the examples.
+Your scenario setting function should only use the configurations used in the examples.
+The build_scenario(builder) function you write will be called by the code here:
+{scenario_builder_code_string}
+

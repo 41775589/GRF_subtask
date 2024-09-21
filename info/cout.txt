@@ -1,0 +1,1796 @@
+[INFO 20:43:55] pymarl Running command 'my_main'
+[INFO 20:43:55] pymarl Started run with ID "7"
+[DEBUG 20:43:55] pymarl Starting Heartbeat
+[DEBUG 20:43:55] my_main Started
+[INFO 20:43:55] my_main Experiment Parameters:
+[INFO 20:43:55] my_main 
+
+{   'action_selector': 'epsilon_greedy',
+    'add_value_last_step': True,
+    'agent': 'rnn',
+    'agent_output_type': 'q',
+    'batch_size': 32,
+    'batch_size_run': 1,
+    'buffer_cpu_only': True,
+    'buffer_size': 5000,
+    'checkpoint_path': '',
+    'common_reward': True,
+    'double_q': True,
+    'env': 'sc2',
+    'env_args': {   'continuing_episode': False,
+                    'debug': False,
+                    'difficulty': '7',
+                    'game_version': None,
+                    'heuristic_ai': False,
+                    'heuristic_rest': False,
+                    'map_name': '2s3z',
+                    'move_amount': 2,
+                    'obs_all_health': True,
+                    'obs_instead_of_state': False,
+                    'obs_last_action': False,
+                    'obs_own_health': True,
+                    'obs_pathing_grid': False,
+                    'obs_terrain_height': False,
+                    'obs_timestep_number': False,
+                    'replay_dir': '',
+                    'replay_prefix': '',
+                    'reward_death_value': 10,
+                    'reward_defeat': 0,
+                    'reward_negative_scale': 0.5,
+                    'reward_only_positive': True,
+                    'reward_scale': True,
+                    'reward_scale_rate': 20,
+                    'reward_sparse': False,
+                    'reward_win': 200,
+                    'seed': 478700479,
+                    'state_last_action': False,
+                    'state_timestep_number': False,
+                    'step_mul': 8},
+    'epsilon_anneal_time': 50000,
+    'epsilon_finish': 0.05,
+    'epsilon_start': 1.0,
+    'evaluate': False,
+    'evaluation_epsilon': 0.0,
+    'gamma': 0.99,
+    'grad_norm_clip': 10,
+    'hidden_dim': 64,
+    'hypergroup': None,
+    'hypernet_embed': 64,
+    'hypernet_layers': 2,
+    'label': 'default_label',
+    'learner': 'q_learner',
+    'learner_log_interval': 10000,
+    'load_step': 0,
+    'local_results_path': 'results',
+    'log_interval': 50000,
+    'lr': 0.0005,
+    'mac': 'basic_mac',
+    'mixer': 'qmix',
+    'mixing_embed_dim': 32,
+    'name': 'qmix',
+    'obs_agent_id': True,
+    'obs_individual_obs': False,
+    'obs_last_action': False,
+    'optim_alpha': 0.99,
+    'optim_eps': 1e-05,
+    'render': False,
+    'repeat_id': 1,
+    'reward_scalarisation': 'sum',
+    'runner': 'episode',
+    'runner_log_interval': 10000,
+    'save_model': False,
+    'save_model_interval': 50000,
+    'save_replay': False,
+    'seed': 478700479,
+    'standardise_returns': False,
+    'standardise_rewards': True,
+    't_max': 2050000,
+    'target_update_interval_or_tau': 200,
+    'test_greedy': True,
+    'test_interval': 50000,
+    'test_nepisode': 100,
+    'use_cuda': True,
+    'use_rnn': False,
+    'use_tensorboard': False,
+    'use_wandb': False,
+    'wandb_mode': 'offline',
+    'wandb_project': None,
+    'wandb_save_model': False,
+    'wandb_team': None}
+
+[INFO 20:43:56] my_main Beginning training for 2050000 timesteps
+[INFO 20:43:56] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 19044 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-gsif5z5k/
+[INFO 20:43:56] absl Connecting to: ws://127.0.0.1:19044/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 19044 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-gsif5z5k/'
+Starting up...
+Startup Phase 1 complete
+[INFO 20:43:57] absl Connecting to: ws://127.0.0.1:19044/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:19044
+Startup Phase 3 complete. Ready for commands.
+[INFO 20:43:58] absl Connecting to: ws://127.0.0.1:19044/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:55802 accepted
+ReadyHandler: 127.0.0.1:55802 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 20:44:02] my_main t_env: 50 / 2050000
+[INFO 20:44:02] my_main Estimated time left: 4 minutes, 17 seconds. Time passed: 6 seconds
+[INFO 20:50:17] my_main Recent Stats | t_env:      50011 | Episode:     1042
+battle_won_mean:           0.0009	dead_allies_mean:          4.9955	dead_enemies_mean:         0.4620	ep_length_mean:           48.2500
+epsilon:                   0.2370	grad_norm:                 9.3479	loss:                      1.0989	q_taken_mean:              0.5468
+return_mean:               5.9195	return_std:                1.0781	target_mean:               0.5844	td_error_abs:              0.7329
+test_battle_won_mean:      0.0000	test_dead_allies_mean:     3.9100	test_dead_enemies_mean:    0.2500	test_ep_length_mean:     108.5400
+test_return_mean:          1.3342	test_return_std:           2.7115	
+[INFO 20:50:18] my_main t_env: 50056 / 2050000
+[INFO 20:50:18] my_main Estimated time left: 4 hours, 10 minutes, 25 seconds. Time passed: 6 minutes, 21 seconds
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:55802 disconnected
+[INFO 20:50:40] absl Shutdown gracefully.
+[INFO 20:50:40] absl Shutdown with return code: -15
+[INFO 20:50:40] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 24127 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-dinyzkjd/
+[INFO 20:50:40] absl Connecting to: ws://127.0.0.1:24127/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 24127 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-dinyzkjd/'
+Starting up...
+Startup Phase 1 complete
+[INFO 20:50:41] absl Connecting to: ws://127.0.0.1:24127/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:24127
+Startup Phase 3 complete. Ready for commands.
+[INFO 20:50:42] absl Connecting to: ws://127.0.0.1:24127/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:54982 accepted
+ReadyHandler: 127.0.0.1:54982 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 20:56:06] my_main t_env: 100061 / 2050000
+[INFO 20:56:06] my_main Estimated time left: 3 hours, 46 minutes, 23 seconds. Time passed: 12 minutes, 10 seconds
+[INFO 20:56:33] my_main Recent Stats | t_env:     100061 | Episode:     1977
+battle_won_mean:           0.2736	dead_allies_mean:          4.3023	dead_enemies_mean:         3.2611	ep_length_mean:           53.1019
+epsilon:                   0.0500	grad_norm:                15.0814	loss:                      1.3046	q_taken_mean:              1.7259
+return_mean:              14.3792	return_std:                3.6851	target_mean:               1.7398	td_error_abs:              0.7585
+test_battle_won_mean:      0.2733	test_dead_allies_mean:     3.9633	test_dead_enemies_mean:    2.5700	test_ep_length_mean:      71.6567
+test_return_mean:         10.9408	test_return_std:           3.4209	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:54982 disconnected
+[INFO 20:57:31] absl Shutdown gracefully.
+[INFO 20:57:31] absl Shutdown with return code: -15
+[INFO 20:57:31] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 18372 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-hnj508d4/
+[INFO 20:57:31] absl Connecting to: ws://127.0.0.1:18372/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 18372 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-hnj508d4/'
+Starting up...
+Startup Phase 1 complete
+[INFO 20:57:32] absl Connecting to: ws://127.0.0.1:18372/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:18372
+Startup Phase 3 complete. Ready for commands.
+[INFO 20:57:33] absl Connecting to: ws://127.0.0.1:18372/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:60862 accepted
+ReadyHandler: 127.0.0.1:60862 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 21:02:04] my_main t_env: 150110 / 2050000
+[INFO 21:02:04] my_main Estimated time left: 3 hours, 46 minutes, 17 seconds. Time passed: 18 minutes, 7 seconds
+[INFO 21:02:29] my_main Recent Stats | t_env:     150110 | Episode:     2984
+battle_won_mean:           0.2448	dead_allies_mean:          4.3604	dead_enemies_mean:         2.9694	ep_length_mean:           49.8619
+epsilon:                   0.0500	grad_norm:                10.1666	loss:                      1.0495	q_taken_mean:              2.4024
+return_mean:              14.2237	return_std:                3.5616	target_mean:               2.3847	td_error_abs:              0.6806
+test_battle_won_mean:      0.2750	test_dead_allies_mean:     4.0850	test_dead_enemies_mean:    2.6675	test_ep_length_mean:      65.9350
+test_return_mean:         11.8446	test_return_std:           3.4770	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:60862 disconnected
+[INFO 21:04:32] absl Shutdown gracefully.
+[INFO 21:04:32] absl Shutdown with return code: -15
+[INFO 21:04:32] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 20863 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-1ev78kyd/
+[INFO 21:04:32] absl Connecting to: ws://127.0.0.1:20863/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 20863 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-1ev78kyd/'
+Starting up...
+Startup Phase 1 complete
+[INFO 21:04:33] absl Connecting to: ws://127.0.0.1:20863/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:20863
+Startup Phase 3 complete. Ready for commands.
+[INFO 21:04:34] absl Connecting to: ws://127.0.0.1:20863/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:40374 accepted
+ReadyHandler: 127.0.0.1:40374 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 21:08:03] my_main t_env: 200119 / 2050000
+[INFO 21:08:03] my_main Estimated time left: 3 hours, 41 minutes, 13 seconds. Time passed: 24 minutes, 6 seconds
+[INFO 21:08:29] my_main Recent Stats | t_env:     200119 | Episode:     3986
+battle_won_mean:           0.2773	dead_allies_mean:          4.3018	dead_enemies_mean:         3.0343	ep_length_mean:           50.4855
+epsilon:                   0.0500	grad_norm:                14.1540	loss:                      1.2513	q_taken_mean:              2.7658
+return_mean:              14.5237	return_std:                3.7147	target_mean:               2.7867	td_error_abs:              0.7510
+test_battle_won_mean:      0.2800	test_dead_allies_mean:     4.0980	test_dead_enemies_mean:    2.7540	test_ep_length_mean:      62.5520
+test_return_mean:         12.4340	test_return_std:           3.5259	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:40374 disconnected
+[INFO 21:11:44] absl Shutdown gracefully.
+[INFO 21:11:44] absl Shutdown with return code: -15
+[INFO 21:11:44] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 24754 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-q3xrn6x1/
+[INFO 21:11:44] absl Connecting to: ws://127.0.0.1:24754/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 24754 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-q3xrn6x1/'
+Starting up...
+Startup Phase 1 complete
+[INFO 21:11:45] absl Connecting to: ws://127.0.0.1:24754/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:24754
+Startup Phase 3 complete. Ready for commands.
+[INFO 21:11:46] absl Connecting to: ws://127.0.0.1:24754/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:39146 accepted
+ReadyHandler: 127.0.0.1:39146 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 21:14:02] my_main t_env: 250160 / 2050000
+[INFO 21:14:02] my_main Estimated time left: 3 hours, 35 minutes, 32 seconds. Time passed: 30 minutes, 6 seconds
+[INFO 21:14:29] my_main Recent Stats | t_env:     250160 | Episode:     4980
+battle_won_mean:           0.2737	dead_allies_mean:          4.3446	dead_enemies_mean:         2.9652	ep_length_mean:           49.4989
+epsilon:                   0.0500	grad_norm:                17.0052	loss:                      1.4910	q_taken_mean:              2.8180
+return_mean:              14.4175	return_std:                3.7323	target_mean:               2.8317	td_error_abs:              0.8099
+test_battle_won_mean:      0.3900	test_dead_allies_mean:     4.0380	test_dead_enemies_mean:    3.4900	test_ep_length_mean:      50.8220
+test_return_mean:         15.5598	test_return_std:           3.6874	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:39146 disconnected
+[INFO 21:18:42] absl Shutdown gracefully.
+[INFO 21:18:42] absl Shutdown with return code: -15
+[INFO 21:18:42] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 19621 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-hk9mo3pn/
+[INFO 21:18:42] absl Connecting to: ws://127.0.0.1:19621/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 19621 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-hk9mo3pn/'
+Starting up...
+Startup Phase 1 complete
+[INFO 21:18:43] absl Connecting to: ws://127.0.0.1:19621/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:19621
+Startup Phase 3 complete. Ready for commands.
+[INFO 21:18:44] absl Connecting to: ws://127.0.0.1:19621/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:58358 accepted
+ReadyHandler: 127.0.0.1:58358 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 21:19:55] my_main t_env: 300181 / 2050000
+[INFO 21:19:55] my_main Estimated time left: 3 hours, 25 minutes, 36 seconds. Time passed: 35 minutes, 59 seconds
+[INFO 21:20:24] my_main Recent Stats | t_env:     300181 | Episode:     5917
+battle_won_mean:           0.4411	dead_allies_mean:          3.8731	dead_enemies_mean:         3.7210	ep_length_mean:           53.3163
+epsilon:                   0.0500	grad_norm:                20.2386	loss:                      1.8781	q_taken_mean:              3.1162
+return_mean:              16.0462	return_std:                3.7740	target_mean:               3.0964	td_error_abs:              0.9057
+test_battle_won_mean:      0.4500	test_dead_allies_mean:     3.9080	test_dead_enemies_mean:    3.6120	test_ep_length_mean:      51.2240
+test_return_mean:         16.0389	test_return_std:           3.5888	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:58358 disconnected
+[INFO 21:25:37] absl Shutdown gracefully.
+[INFO 21:25:37] absl Shutdown with return code: -15
+[INFO 21:25:37] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 20419 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-fedzvhoa/
+[INFO 21:25:37] absl Connecting to: ws://127.0.0.1:20419/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 20419 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-fedzvhoa/'
+Starting up...
+Startup Phase 1 complete
+[INFO 21:25:38] absl Connecting to: ws://127.0.0.1:20419/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:20419
+Startup Phase 3 complete. Ready for commands.
+[INFO 21:25:39] absl Connecting to: ws://127.0.0.1:20419/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:37300 accepted
+ReadyHandler: 127.0.0.1:37300 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 21:25:48] my_main t_env: 350224 / 2050000
+[INFO 21:25:48] my_main Estimated time left: 3 hours, 20 minutes, 0 seconds. Time passed: 41 minutes, 52 seconds
+[INFO 21:26:16] my_main Recent Stats | t_env:     350224 | Episode:     6827
+battle_won_mean:           0.5484	dead_allies_mean:          3.5962	dead_enemies_mean:         4.0286	ep_length_mean:           54.7365
+epsilon:                   0.0500	grad_norm:                27.2424	loss:                      2.1212	q_taken_mean:              3.4694
+return_mean:              16.8310	return_std:                3.6793	target_mean:               3.4713	td_error_abs:              0.9926
+test_battle_won_mean:      0.5200	test_dead_allies_mean:     3.6960	test_dead_enemies_mean:    3.7760	test_ep_length_mean:      51.4440
+test_return_mean:         16.5364	test_return_std:           3.4286	
+[INFO 21:31:39] my_main t_env: 400260 / 2050000
+[INFO 21:31:39] my_main Estimated time left: 3 hours, 12 minutes, 42 seconds. Time passed: 47 minutes, 43 seconds
+[INFO 21:32:08] my_main Recent Stats | t_env:     400260 | Episode:     7731
+battle_won_mean:           0.7232	dead_allies_mean:          2.9923	dead_enemies_mean:         4.4333	ep_length_mean:           55.1259
+epsilon:                   0.0500	grad_norm:                53.1361	loss:                      2.4922	q_taken_mean:              3.8089
+return_mean:              18.1015	return_std:                3.2273	target_mean:               3.8198	td_error_abs:              1.0889
+test_battle_won_mean:      0.6140	test_dead_allies_mean:     3.3880	test_dead_enemies_mean:    4.0940	test_ep_length_mean:      52.6740
+test_return_mean:         17.3241	test_return_std:           3.2489	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:37300 disconnected
+[INFO 21:32:32] absl Shutdown gracefully.
+[INFO 21:32:32] absl Shutdown with return code: -15
+[INFO 21:32:32] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 16616 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-re0nw005/
+[INFO 21:32:32] absl Connecting to: ws://127.0.0.1:16616/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 16616 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-re0nw005/'
+Starting up...
+Startup Phase 1 complete
+[INFO 21:32:33] absl Connecting to: ws://127.0.0.1:16616/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:16616
+Startup Phase 3 complete. Ready for commands.
+[INFO 21:32:34] absl Connecting to: ws://127.0.0.1:16616/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:41498 accepted
+ReadyHandler: 127.0.0.1:41498 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 21:37:37] my_main t_env: 450297 / 2050000
+[INFO 21:37:37] my_main Estimated time left: 3 hours, 11 minutes, 6 seconds. Time passed: 53 minutes, 41 seconds
+[INFO 21:38:09] my_main Recent Stats | t_env:     450297 | Episode:     8644
+battle_won_mean:           0.7407	dead_allies_mean:          2.9065	dead_enemies_mean:         4.5035	ep_length_mean:           55.0103
+epsilon:                   0.0500	grad_norm:                58.5080	loss:                      2.1463	q_taken_mean:              3.7969
+return_mean:              18.1916	return_std:                3.2351	target_mean:               3.8277	td_error_abs:              1.0384
+test_battle_won_mean:      0.7400	test_dead_allies_mean:     3.0060	test_dead_enemies_mean:    4.4520	test_ep_length_mean:      54.8480
+test_return_mean:         18.2941	test_return_std:           2.8068	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:41498 disconnected
+[INFO 21:39:31] absl Shutdown gracefully.
+[INFO 21:39:31] absl Shutdown with return code: -15
+[INFO 21:39:31] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 18340 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-duj3znho/
+[INFO 21:39:31] absl Connecting to: ws://127.0.0.1:18340/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 18340 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-duj3znho/'
+Starting up...
+Startup Phase 1 complete
+[INFO 21:39:32] absl Connecting to: ws://127.0.0.1:18340/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:18340
+Startup Phase 3 complete. Ready for commands.
+[INFO 21:39:33] absl Connecting to: ws://127.0.0.1:18340/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:51320 accepted
+ReadyHandler: 127.0.0.1:51320 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 21:43:40] my_main t_env: 500323 / 2050000
+[INFO 21:43:40] my_main Estimated time left: 3 hours, 7 minutes, 9 seconds. Time passed: 59 minutes, 44 seconds
+[INFO 21:44:06] my_main Recent Stats | t_env:     500323 | Episode:     9583
+battle_won_mean:           0.7934	dead_allies_mean:          2.7034	dead_enemies_mean:         4.6111	ep_length_mean:           53.5609
+epsilon:                   0.0500	grad_norm:                62.1465	loss:                      2.0593	q_taken_mean:              3.7544
+return_mean:              18.6281	return_std:                2.8306	target_mean:               3.7733	td_error_abs:              1.0168
+test_battle_won_mean:      0.8200	test_dead_allies_mean:     2.6340	test_dead_enemies_mean:    4.6460	test_ep_length_mean:      54.3800
+test_return_mean:         18.8255	test_return_std:           2.4481	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:51320 disconnected
+[INFO 21:46:40] absl Shutdown gracefully.
+[INFO 21:46:40] absl Shutdown with return code: -15
+[INFO 21:46:40] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 21968 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-z03q0r5m/
+[INFO 21:46:40] absl Connecting to: ws://127.0.0.1:21968/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 21968 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-z03q0r5m/'
+Starting up...
+Startup Phase 1 complete
+[INFO 21:46:41] absl Connecting to: ws://127.0.0.1:21968/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:21968
+Startup Phase 3 complete. Ready for commands.
+[INFO 21:46:42] absl Connecting to: ws://127.0.0.1:21968/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:35146 accepted
+ReadyHandler: 127.0.0.1:35146 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 21:49:40] my_main t_env: 550340 / 2050000
+[INFO 21:49:40] my_main Estimated time left: 2 hours, 59 minutes, 45 seconds. Time passed: 1 hours, 5 minutes, 43 seconds
+[INFO 21:50:07] my_main Recent Stats | t_env:     550340 | Episode:    10521
+battle_won_mean:           0.8291	dead_allies_mean:          2.4219	dead_enemies_mean:         4.6997	ep_length_mean:           53.0997
+epsilon:                   0.0500	grad_norm:                53.9472	loss:                      1.7730	q_taken_mean:              3.9614
+return_mean:              18.8887	return_std:                2.5614	target_mean:               3.9786	td_error_abs:              0.9518
+test_battle_won_mean:      0.8720	test_dead_allies_mean:     2.3320	test_dead_enemies_mean:    4.7660	test_ep_length_mean:      53.6520
+test_return_mean:         19.2129	test_return_std:           2.0236	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:35146 disconnected
+[INFO 21:53:42] absl Shutdown gracefully.
+[INFO 21:53:42] absl Shutdown with return code: -15
+[INFO 21:53:42] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 20419 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-60a_ykjh/
+[INFO 21:53:42] absl Connecting to: ws://127.0.0.1:20419/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 20419 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-60a_ykjh/'
+Starting up...
+Startup Phase 1 complete
+[INFO 21:53:43] absl Connecting to: ws://127.0.0.1:20419/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:20419
+Startup Phase 3 complete. Ready for commands.
+[INFO 21:53:44] absl Connecting to: ws://127.0.0.1:20419/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:39798 accepted
+ReadyHandler: 127.0.0.1:39798 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 21:55:36] my_main t_env: 600350 / 2050000
+[INFO 21:55:36] my_main Estimated time left: 2 hours, 52 minutes, 4 seconds. Time passed: 1 hours, 11 minutes, 40 seconds
+[INFO 21:56:04] my_main Recent Stats | t_env:     600350 | Episode:    11443
+battle_won_mean:           0.8103	dead_allies_mean:          2.5771	dead_enemies_mean:         4.6459	ep_length_mean:           54.3066
+epsilon:                   0.0500	grad_norm:                49.8947	loss:                      1.4496	q_taken_mean:              4.0597
+return_mean:              18.7327	return_std:                2.7385	target_mean:               4.0880	td_error_abs:              0.8663
+test_battle_won_mean:      0.8980	test_dead_allies_mean:     2.0940	test_dead_enemies_mean:    4.8200	test_ep_length_mean:      53.2480
+test_return_mean:         19.3843	test_return_std:           1.8457	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:39798 disconnected
+[INFO 22:00:42] absl Shutdown gracefully.
+[INFO 22:00:42] absl Shutdown with return code: -15
+[INFO 22:00:42] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 23264 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-0__bxpar/
+[INFO 22:00:43] absl Connecting to: ws://127.0.0.1:23264/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 23264 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-0__bxpar/'
+Starting up...
+Startup Phase 1 complete
+[INFO 22:00:44] absl Connecting to: ws://127.0.0.1:23264/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:23264
+Startup Phase 3 complete. Ready for commands.
+[INFO 22:00:45] absl Connecting to: ws://127.0.0.1:23264/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:49162 accepted
+ReadyHandler: 127.0.0.1:49162 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 22:01:32] my_main t_env: 650352 / 2050000
+[INFO 22:01:32] my_main Estimated time left: 2 hours, 45 minutes, 58 seconds. Time passed: 1 hours, 17 minutes, 35 seconds
+[INFO 22:01:59] my_main Recent Stats | t_env:     650352 | Episode:    12371
+battle_won_mean:           0.8194	dead_allies_mean:          2.4303	dead_enemies_mean:         4.6840	ep_length_mean:           53.9610
+epsilon:                   0.0500	grad_norm:                45.7314	loss:                      1.5266	q_taken_mean:              4.0707
+return_mean:              18.8483	return_std:                2.5710	target_mean:               4.1077	td_error_abs:              0.8739
+test_battle_won_mean:      0.9380	test_dead_allies_mean:     1.8460	test_dead_enemies_mean:    4.9000	test_ep_length_mean:      52.4200
+test_return_mean:         19.6321	test_return_std:           1.5352	
+[INFO 22:07:24] my_main t_env: 700397 / 2050000
+[INFO 22:07:24] my_main Estimated time left: 2 hours, 38 minutes, 32 seconds. Time passed: 1 hours, 23 minutes, 28 seconds
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:49162 disconnected
+[INFO 22:07:43] absl Shutdown gracefully.
+[INFO 22:07:43] absl Shutdown with return code: -15
+[INFO 22:07:43] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 15856 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-9i2dvqqy/
+[INFO 22:07:43] absl Connecting to: ws://127.0.0.1:15856/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 15856 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-9i2dvqqy/'
+Starting up...
+Startup Phase 1 complete
+[INFO 22:07:44] absl Connecting to: ws://127.0.0.1:15856/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:15856
+Startup Phase 3 complete. Ready for commands.
+[INFO 22:07:45] absl Connecting to: ws://127.0.0.1:15856/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:48112 accepted
+ReadyHandler: 127.0.0.1:48112 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 22:07:58] my_main Recent Stats | t_env:     700397 | Episode:    13328
+battle_won_mean:           0.8750	dead_allies_mean:          2.1965	dead_enemies_mean:         4.7608	ep_length_mean:           52.5771
+epsilon:                   0.0500	grad_norm:                41.5054	loss:                      1.1191	q_taken_mean:              4.0975
+return_mean:              19.1938	return_std:                2.2312	target_mean:               4.0596	td_error_abs:              0.7205
+test_battle_won_mean:      0.9420	test_dead_allies_mean:     1.6940	test_dead_enemies_mean:    4.9000	test_ep_length_mean:      50.7340
+test_return_mean:         19.6471	test_return_std:           1.4941	
+[INFO 22:13:25] my_main t_env: 750417 / 2050000
+[INFO 22:13:25] my_main Estimated time left: 2 hours, 36 minutes, 18 seconds. Time passed: 1 hours, 29 minutes, 29 seconds
+[INFO 22:13:50] my_main Recent Stats | t_env:     750417 | Episode:    14286
+battle_won_mean:           0.8808	dead_allies_mean:          2.1295	dead_enemies_mean:         4.7993	ep_length_mean:           52.2925
+epsilon:                   0.0500	grad_norm:                37.5538	loss:                      1.1181	q_taken_mean:              3.8567
+return_mean:              19.2625	return_std:                2.0935	target_mean:               3.8806	td_error_abs:              0.7365
+test_battle_won_mean:      0.9480	test_dead_allies_mean:     1.5880	test_dead_enemies_mean:    4.9120	test_ep_length_mean:      50.6020
+test_return_mean:         19.6994	test_return_std:           1.3358	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:48112 disconnected
+[INFO 22:14:49] absl Shutdown gracefully.
+[INFO 22:14:49] absl Shutdown with return code: -15
+[INFO 22:14:49] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 23529 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-svm41kc5/
+[INFO 22:14:49] absl Connecting to: ws://127.0.0.1:23529/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 23529 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-svm41kc5/'
+Starting up...
+Startup Phase 1 complete
+[INFO 22:14:50] absl Connecting to: ws://127.0.0.1:23529/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:23529
+Startup Phase 3 complete. Ready for commands.
+[INFO 22:14:51] absl Connecting to: ws://127.0.0.1:23529/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:51282 accepted
+ReadyHandler: 127.0.0.1:51282 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 22:19:26] my_main t_env: 800434 / 2050000
+[INFO 22:19:26] my_main Estimated time left: 2 hours, 30 minutes, 20 seconds. Time passed: 1 hours, 35 minutes, 30 seconds
+[INFO 22:19:53] my_main Recent Stats | t_env:     800434 | Episode:    15276
+battle_won_mean:           0.8955	dead_allies_mean:          1.9634	dead_enemies_mean:         4.8164	ep_length_mean:           50.9070
+epsilon:                   0.0500	grad_norm:                29.9452	loss:                      0.8769	q_taken_mean:              3.9251
+return_mean:              19.3561	return_std:                1.9974	target_mean:               3.9119	td_error_abs:              0.6310
+test_battle_won_mean:      0.9360	test_dead_allies_mean:     1.5340	test_dead_enemies_mean:    4.8920	test_ep_length_mean:      49.6080
+test_return_mean:         19.6242	test_return_std:           1.4485	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:51282 disconnected
+[INFO 22:21:58] absl Shutdown gracefully.
+[INFO 22:21:58] absl Shutdown with return code: -15
+[INFO 22:21:58] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 24012 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-uqwbx5wj/
+[INFO 22:21:58] absl Connecting to: ws://127.0.0.1:24012/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 24012 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-uqwbx5wj/'
+Starting up...
+Startup Phase 1 complete
+[INFO 22:21:59] absl Connecting to: ws://127.0.0.1:24012/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:24012
+Startup Phase 3 complete. Ready for commands.
+[INFO 22:22:00] absl Connecting to: ws://127.0.0.1:24012/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:43154 accepted
+ReadyHandler: 127.0.0.1:43154 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 22:25:26] my_main t_env: 850488 / 2050000
+[INFO 22:25:26] my_main Estimated time left: 2 hours, 23 minutes, 39 seconds. Time passed: 1 hours, 41 minutes, 30 seconds
+[INFO 22:25:52] my_main Recent Stats | t_env:     850488 | Episode:    16280
+battle_won_mean:           0.8885	dead_allies_mean:          1.9396	dead_enemies_mean:         4.8029	ep_length_mean:           49.8512
+epsilon:                   0.0500	grad_norm:                15.6076	loss:                      0.7725	q_taken_mean:              3.7123
+return_mean:              19.2849	return_std:                2.1389	target_mean:               3.7038	td_error_abs:              0.5744
+test_battle_won_mean:      0.9480	test_dead_allies_mean:     1.4320	test_dead_enemies_mean:    4.9140	test_ep_length_mean:      48.7160
+test_return_mean:         19.7012	test_return_std:           1.3175	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:43154 disconnected
+[INFO 22:29:07] absl Shutdown gracefully.
+[INFO 22:29:07] absl Shutdown with return code: -15
+[INFO 22:29:07] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 23718 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-_ltv1bov/
+[INFO 22:29:07] absl Connecting to: ws://127.0.0.1:23718/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 23718 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-_ltv1bov/'
+Starting up...
+Startup Phase 1 complete
+[INFO 22:29:08] absl Connecting to: ws://127.0.0.1:23718/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:23718
+Startup Phase 3 complete. Ready for commands.
+[INFO 22:29:09] absl Connecting to: ws://127.0.0.1:23718/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:39066 accepted
+ReadyHandler: 127.0.0.1:39066 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 22:31:27] my_main t_env: 900515 / 2050000
+[INFO 22:31:27] my_main Estimated time left: 2 hours, 18 minutes, 22 seconds. Time passed: 1 hours, 47 minutes, 31 seconds
+[INFO 22:31:53] my_main Recent Stats | t_env:     900515 | Episode:    17288
+battle_won_mean:           0.8960	dead_allies_mean:          1.8615	dead_enemies_mean:         4.8248	ep_length_mean:           49.6108
+epsilon:                   0.0500	grad_norm:                19.2583	loss:                      0.6884	q_taken_mean:              3.5796
+return_mean:              19.3745	return_std:                1.9366	target_mean:               3.5826	td_error_abs:              0.5558
+test_battle_won_mean:      0.9460	test_dead_allies_mean:     1.3880	test_dead_enemies_mean:    4.9060	test_ep_length_mean:      47.8240
+test_return_mean:         19.6917	test_return_std:           1.3347	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:39066 disconnected
+[INFO 22:36:19] absl Shutdown gracefully.
+[INFO 22:36:19] absl Shutdown with return code: -15
+[INFO 22:36:19] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 23146 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-mx2if9rc/
+[INFO 22:36:19] absl Connecting to: ws://127.0.0.1:23146/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 23146 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-mx2if9rc/'
+Starting up...
+Startup Phase 1 complete
+[INFO 22:36:20] absl Connecting to: ws://127.0.0.1:23146/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:23146
+Startup Phase 3 complete. Ready for commands.
+[INFO 22:36:21] absl Connecting to: ws://127.0.0.1:23146/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:43882 accepted
+ReadyHandler: 127.0.0.1:43882 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 22:37:29] my_main t_env: 950535 / 2050000
+[INFO 22:37:29] my_main Estimated time left: 2 hours, 12 minutes, 19 seconds. Time passed: 1 hours, 53 minutes, 32 seconds
+[INFO 22:37:54] my_main Recent Stats | t_env:     950535 | Episode:    18306
+battle_won_mean:           0.9080	dead_allies_mean:          1.8453	dead_enemies_mean:         4.8268	ep_length_mean:           49.0787
+epsilon:                   0.0500	grad_norm:                19.7291	loss:                      0.5480	q_taken_mean:              3.5770
+return_mean:              19.4093	return_std:                1.9323	target_mean:               3.6042	td_error_abs:              0.5045
+test_battle_won_mean:      0.9520	test_dead_allies_mean:     1.3400	test_dead_enemies_mean:    4.9220	test_ep_length_mean:      46.8980
+test_return_mean:         19.7223	test_return_std:           1.2685	
+[INFO 22:43:26] my_main t_env: 1000544 / 2050000
+[INFO 22:43:26] my_main Estimated time left: 2 hours, 5 minutes, 6 seconds. Time passed: 1 hours, 59 minutes, 30 seconds
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:43882 disconnected
+[INFO 22:43:31] absl Shutdown gracefully.
+[INFO 22:43:31] absl Shutdown with return code: -15
+[INFO 22:43:31] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 19763 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-rljj8chd/
+[INFO 22:43:31] absl Connecting to: ws://127.0.0.1:19763/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 19763 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-rljj8chd/'
+Starting up...
+Startup Phase 1 complete
+[INFO 22:43:32] absl Connecting to: ws://127.0.0.1:19763/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:19763
+Startup Phase 3 complete. Ready for commands.
+[INFO 22:43:33] absl Connecting to: ws://127.0.0.1:19763/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:51218 accepted
+ReadyHandler: 127.0.0.1:51218 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 22:43:57] my_main Recent Stats | t_env:    1000544 | Episode:    19337
+battle_won_mean:           0.9190	dead_allies_mean:          1.7398	dead_enemies_mean:         4.8605	ep_length_mean:           48.8011
+epsilon:                   0.0500	grad_norm:                12.2129	loss:                      0.5117	q_taken_mean:              3.3177
+return_mean:              19.5058	return_std:                1.6894	target_mean:               3.3249	td_error_abs:              0.4663
+test_battle_won_mean:      0.9520	test_dead_allies_mean:     1.2920	test_dead_enemies_mean:    4.9180	test_ep_length_mean:      46.4860
+test_return_mean:         19.7216	test_return_std:           1.2660	
+[INFO 22:49:30] my_main t_env: 1050581 / 2050000
+[INFO 22:49:30] my_main Estimated time left: 2 hours, 57 seconds. Time passed: 2 hours, 5 minutes, 33 seconds
+[INFO 22:49:55] my_main Recent Stats | t_env:    1050581 | Episode:    20379
+battle_won_mean:           0.9310	dead_allies_mean:          1.5936	dead_enemies_mean:         4.8744	ep_length_mean:           48.0533
+epsilon:                   0.0500	grad_norm:                11.7311	loss:                      0.4189	q_taken_mean:              3.2273
+return_mean:              19.5668	return_std:                1.6517	target_mean:               3.2312	td_error_abs:              0.4283
+test_battle_won_mean:      0.9700	test_dead_allies_mean:     1.1420	test_dead_enemies_mean:    4.9460	test_ep_length_mean:      45.7940
+test_return_mean:         19.8192	test_return_std:           1.1008	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:51218 disconnected
+[INFO 22:50:41] absl Shutdown gracefully.
+[INFO 22:50:41] absl Shutdown with return code: -15
+[INFO 22:50:41] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 19571 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-cerd7_y8/
+[INFO 22:50:41] absl Connecting to: ws://127.0.0.1:19571/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 19571 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-cerd7_y8/'
+Starting up...
+Startup Phase 1 complete
+[INFO 22:50:42] absl Connecting to: ws://127.0.0.1:19571/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:19571
+Startup Phase 3 complete. Ready for commands.
+[INFO 22:50:43] absl Connecting to: ws://127.0.0.1:19571/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:47088 accepted
+ReadyHandler: 127.0.0.1:47088 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 22:55:31] my_main t_env: 1100638 / 2050000
+[INFO 22:55:31] my_main Estimated time left: 1 hours, 54 minutes, 13 seconds. Time passed: 2 hours, 11 minutes, 35 seconds
+[INFO 22:55:55] my_main Recent Stats | t_env:    1100638 | Episode:    21437
+battle_won_mean:           0.9192	dead_allies_mean:          1.5730	dead_enemies_mean:         4.8528	ep_length_mean:           47.5826
+epsilon:                   0.0500	grad_norm:                10.4270	loss:                      0.3402	q_taken_mean:              3.1101
+return_mean:              19.4786	return_std:                1.8475	target_mean:               3.1022	td_error_abs:              0.3817
+test_battle_won_mean:      0.9760	test_dead_allies_mean:     1.0200	test_dead_enemies_mean:    4.9560	test_ep_length_mean:      44.9660
+test_return_mean:         19.8577	test_return_std:           0.8488	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:47088 disconnected
+[INFO 22:57:51] absl Shutdown gracefully.
+[INFO 22:57:51] absl Shutdown with return code: -15
+[INFO 22:57:51] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 18338 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-jqiqizj1/
+[INFO 22:57:51] absl Connecting to: ws://127.0.0.1:18338/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 18338 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-jqiqizj1/'
+Starting up...
+Startup Phase 1 complete
+[INFO 22:57:52] absl Connecting to: ws://127.0.0.1:18338/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:18338
+Startup Phase 3 complete. Ready for commands.
+[INFO 22:57:53] absl Connecting to: ws://127.0.0.1:18338/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:55980 accepted
+ReadyHandler: 127.0.0.1:55980 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 23:01:26] my_main t_env: 1150640 / 2050000
+[INFO 23:01:26] my_main Estimated time left: 1 hours, 46 minutes, 20 seconds. Time passed: 2 hours, 17 minutes, 30 seconds
+[INFO 23:01:50] my_main Recent Stats | t_env:    1150640 | Episode:    22464
+battle_won_mean:           0.9040	dead_allies_mean:          1.6692	dead_enemies_mean:         4.8266	ep_length_mean:           48.2182
+epsilon:                   0.0500	grad_norm:                 8.1824	loss:                      0.4113	q_taken_mean:              2.9459
+return_mean:              19.3908	return_std:                1.9611	target_mean:               2.9568	td_error_abs:              0.4134
+test_battle_won_mean:      0.9840	test_dead_allies_mean:     0.9320	test_dead_enemies_mean:    4.9620	test_ep_length_mean:      44.5040
+test_return_mean:         19.8870	test_return_std:           0.8359	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:55980 disconnected
+[INFO 23:05:02] absl Shutdown gracefully.
+[INFO 23:05:02] absl Shutdown with return code: -15
+[INFO 23:05:02] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 17748 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-6od2zg54/
+[INFO 23:05:02] absl Connecting to: ws://127.0.0.1:17748/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 17748 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-6od2zg54/'
+Starting up...
+Startup Phase 1 complete
+[INFO 23:05:03] absl Connecting to: ws://127.0.0.1:17748/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:17748
+Startup Phase 3 complete. Ready for commands.
+[INFO 23:05:04] absl Connecting to: ws://127.0.0.1:17748/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:59220 accepted
+ReadyHandler: 127.0.0.1:59220 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 23:07:31] my_main t_env: 1200661 / 2050000
+[INFO 23:07:31] my_main Estimated time left: 1 hours, 43 minutes, 15 seconds. Time passed: 2 hours, 23 minutes, 34 seconds
+[INFO 23:07:55] my_main Recent Stats | t_env:    1200661 | Episode:    23528
+battle_won_mean:           0.9364	dead_allies_mean:          1.5260	dead_enemies_mean:         4.8814	ep_length_mean:           47.4488
+epsilon:                   0.0500	grad_norm:                13.1173	loss:                      0.3528	q_taken_mean:              2.9055
+return_mean:              19.5867	return_std:                1.6210	target_mean:               2.9078	td_error_abs:              0.3877
+test_battle_won_mean:      0.9840	test_dead_allies_mean:     0.8600	test_dead_enemies_mean:    4.9600	test_ep_length_mean:      43.8460
+test_return_mean:         19.8845	test_return_std:           0.8496	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:59220 disconnected
+[INFO 23:12:19] absl Shutdown gracefully.
+[INFO 23:12:19] absl Shutdown with return code: -15
+[INFO 23:12:19] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 20668 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-5dtcgwp6/
+[INFO 23:12:19] absl Connecting to: ws://127.0.0.1:20668/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 20668 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-5dtcgwp6/'
+Starting up...
+Startup Phase 1 complete
+[INFO 23:12:20] absl Connecting to: ws://127.0.0.1:20668/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:20668
+Startup Phase 3 complete. Ready for commands.
+[INFO 23:12:21] absl Connecting to: ws://127.0.0.1:20668/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:33244 accepted
+ReadyHandler: 127.0.0.1:33244 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 23:13:37] my_main t_env: 1250690 / 2050000
+[INFO 23:13:37] my_main Estimated time left: 1 hours, 37 minutes, 40 seconds. Time passed: 2 hours, 29 minutes, 41 seconds
+[INFO 23:14:02] my_main Recent Stats | t_env:    1250690 | Episode:    24592
+battle_won_mean:           0.9306	dead_allies_mean:          1.5564	dead_enemies_mean:         4.8631	ep_length_mean:           47.0546
+epsilon:                   0.0500	grad_norm:                 4.8154	loss:                      0.3557	q_taken_mean:              2.7674
+return_mean:              19.5439	return_std:                1.7277	target_mean:               2.7733	td_error_abs:              0.3803
+test_battle_won_mean:      0.9840	test_dead_allies_mean:     0.8260	test_dead_enemies_mean:    4.9600	test_ep_length_mean:      43.4860
+test_return_mean:         19.8715	test_return_std:           0.9350	
+[INFO 23:19:42] my_main t_env: 1300711 / 2050000
+[INFO 23:19:42] my_main Estimated time left: 1 hours, 30 minutes, 54 seconds. Time passed: 2 hours, 35 minutes, 45 seconds
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:33244 disconnected
+[INFO 23:19:43] absl Shutdown gracefully.
+[INFO 23:19:43] absl Shutdown with return code: -15
+[INFO 23:19:43] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 18288 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-g0jr_fpx/
+[INFO 23:19:44] absl Connecting to: ws://127.0.0.1:18288/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 18288 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-g0jr_fpx/'
+Starting up...
+Startup Phase 1 complete
+[INFO 23:19:45] absl Connecting to: ws://127.0.0.1:18288/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:18288
+Startup Phase 3 complete. Ready for commands.
+[INFO 23:19:46] absl Connecting to: ws://127.0.0.1:18288/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:45450 accepted
+ReadyHandler: 127.0.0.1:45450 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 23:20:12] my_main Recent Stats | t_env:    1300711 | Episode:    25673
+battle_won_mean:           0.9277	dead_allies_mean:          1.4969	dead_enemies_mean:         4.8609	ep_length_mean:           46.4325
+epsilon:                   0.0500	grad_norm:                 8.5501	loss:                      0.3222	q_taken_mean:              2.7142
+return_mean:              19.5317	return_std:                1.7477	target_mean:               2.7040	td_error_abs:              0.3690
+test_battle_won_mean:      0.9820	test_dead_allies_mean:     0.8520	test_dead_enemies_mean:    4.9500	test_ep_length_mean:      43.3580
+test_return_mean:         19.8345	test_return_std:           1.1619	
+[INFO 23:25:48] my_main t_env: 1350718 / 2050000
+[INFO 23:25:48] my_main Estimated time left: 1 hours, 25 minutes, 21 seconds. Time passed: 2 hours, 41 minutes, 52 seconds
+[INFO 23:26:12] my_main Recent Stats | t_env:    1350718 | Episode:    26758
+battle_won_mean:           0.9229	dead_allies_mean:          1.4628	dead_enemies_mean:         4.8496	ep_length_mean:           45.9969
+epsilon:                   0.0500	grad_norm:                11.5224	loss:                      0.3757	q_taken_mean:              2.6737
+return_mean:              19.5078	return_std:                1.7334	target_mean:               2.6607	td_error_abs:              0.3974
+test_battle_won_mean:      0.9800	test_dead_allies_mean:     0.8860	test_dead_enemies_mean:    4.9460	test_ep_length_mean:      43.4480
+test_return_mean:         19.8196	test_return_std:           1.3152	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:45450 disconnected
+[INFO 23:26:58] absl Shutdown gracefully.
+[INFO 23:26:58] absl Shutdown with return code: -15
+[INFO 23:26:58] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 24189 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-lt050l8d/
+[INFO 23:26:58] absl Connecting to: ws://127.0.0.1:24189/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 24189 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-lt050l8d/'
+Starting up...
+Startup Phase 1 complete
+[INFO 23:26:59] absl Connecting to: ws://127.0.0.1:24189/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:24189
+Startup Phase 3 complete. Ready for commands.
+[INFO 23:27:00] absl Connecting to: ws://127.0.0.1:24189/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:44948 accepted
+ReadyHandler: 127.0.0.1:44948 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 23:31:53] my_main t_env: 1400759 / 2050000
+[INFO 23:31:53] my_main Estimated time left: 1 hours, 18 minutes, 52 seconds. Time passed: 2 hours, 47 minutes, 56 seconds
+[INFO 23:32:17] my_main Recent Stats | t_env:    1400759 | Episode:    27827
+battle_won_mean:           0.8907	dead_allies_mean:          1.7133	dead_enemies_mean:         4.7832	ep_length_mean:           46.6145
+epsilon:                   0.0500	grad_norm:                 6.3099	loss:                      0.3317	q_taken_mean:              2.7719
+return_mean:              19.2832	return_std:                2.1251	target_mean:               2.7783	td_error_abs:              0.3655
+test_battle_won_mean:      0.9740	test_dead_allies_mean:     0.8940	test_dead_enemies_mean:    4.9380	test_ep_length_mean:      43.4200
+test_return_mean:         19.7856	test_return_std:           1.3850	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:44948 disconnected
+[INFO 23:34:16] absl Shutdown gracefully.
+[INFO 23:34:16] absl Shutdown with return code: -15
+[INFO 23:34:16] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 23336 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-3coqwmow/
+[INFO 23:34:16] absl Connecting to: ws://127.0.0.1:23336/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 23336 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-3coqwmow/'
+Starting up...
+Startup Phase 1 complete
+[INFO 23:34:17] absl Connecting to: ws://127.0.0.1:23336/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:23336
+Startup Phase 3 complete. Ready for commands.
+[INFO 23:34:18] absl Connecting to: ws://127.0.0.1:23336/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:56660 accepted
+ReadyHandler: 127.0.0.1:56660 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 23:38:00] my_main t_env: 1450781 / 2050000
+[INFO 23:38:00] my_main Estimated time left: 1 hours, 13 minutes, 19 seconds. Time passed: 2 hours, 54 minutes, 4 seconds
+[INFO 23:38:24] my_main Recent Stats | t_env:    1450781 | Episode:    28907
+battle_won_mean:           0.9143	dead_allies_mean:          1.6222	dead_enemies_mean:         4.8386	ep_length_mean:           46.5905
+epsilon:                   0.0500	grad_norm:                11.6014	loss:                      0.4209	q_taken_mean:              2.6682
+return_mean:              19.4452	return_std:                1.8671	target_mean:               2.6559	td_error_abs:              0.4161
+test_battle_won_mean:      0.9760	test_dead_allies_mean:     0.8700	test_dead_enemies_mean:    4.9420	test_ep_length_mean:      43.2100
+test_return_mean:         19.8031	test_return_std:           1.2941	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:56660 disconnected
+[INFO 23:41:38] absl Shutdown gracefully.
+[INFO 23:41:38] absl Shutdown with return code: -15
+[INFO 23:41:38] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 15966 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-sn7eusst/
+[INFO 23:41:38] absl Connecting to: ws://127.0.0.1:15966/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 15966 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-sn7eusst/'
+Starting up...
+Startup Phase 1 complete
+[INFO 23:41:39] absl Connecting to: ws://127.0.0.1:15966/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:15966
+Startup Phase 3 complete. Ready for commands.
+[INFO 23:41:40] absl Connecting to: ws://127.0.0.1:15966/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:41338 accepted
+ReadyHandler: 127.0.0.1:41338 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 23:44:08] my_main t_env: 1500806 / 2050000
+[INFO 23:44:08] my_main Estimated time left: 1 hours, 7 minutes, 19 seconds. Time passed: 3 hours, 12 seconds
+[INFO 23:44:32] my_main Recent Stats | t_env:    1500806 | Episode:    29987
+battle_won_mean:           0.9398	dead_allies_mean:          1.4199	dead_enemies_mean:         4.8898	ep_length_mean:           46.2325
+epsilon:                   0.0500	grad_norm:                 7.1339	loss:                      0.3498	q_taken_mean:              2.6417
+return_mean:              19.6319	return_std:                1.4990	target_mean:               2.6471	td_error_abs:              0.3746
+test_battle_won_mean:      0.9760	test_dead_allies_mean:     0.8320	test_dead_enemies_mean:    4.9480	test_ep_length_mean:      43.0640
+test_return_mean:         19.8211	test_return_std:           1.1628	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:41338 disconnected
+[INFO 23:48:50] absl Shutdown gracefully.
+[INFO 23:48:50] absl Shutdown with return code: -15
+[INFO 23:48:50] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 17657 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-set3rfet/
+[INFO 23:48:50] absl Connecting to: ws://127.0.0.1:17657/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 17657 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-set3rfet/'
+Starting up...
+Startup Phase 1 complete
+[INFO 23:48:51] absl Connecting to: ws://127.0.0.1:17657/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:17657
+Startup Phase 3 complete. Ready for commands.
+[INFO 23:48:52] absl Connecting to: ws://127.0.0.1:17657/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:57274 accepted
+ReadyHandler: 127.0.0.1:57274 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 23:50:07] my_main t_env: 1550835 / 2050000
+[INFO 23:50:07] my_main Estimated time left: 59 minutes, 43 seconds. Time passed: 3 hours, 6 minutes, 11 seconds
+[INFO 23:50:30] my_main Recent Stats | t_env:    1550835 | Episode:    31053
+battle_won_mean:           0.9138	dead_allies_mean:          1.6062	dead_enemies_mean:         4.8342	ep_length_mean:           46.8875
+epsilon:                   0.0500	grad_norm:                 6.7920	loss:                      0.3839	q_taken_mean:              2.6479
+return_mean:              19.4247	return_std:                1.9603	target_mean:               2.6491	td_error_abs:              0.3899
+test_battle_won_mean:      0.9800	test_dead_allies_mean:     0.7820	test_dead_enemies_mean:    4.9640	test_ep_length_mean:      42.7960
+test_return_mean:         19.8758	test_return_std:           0.8419	
+[INFO 23:56:10] my_main t_env: 1600869 / 2050000
+[INFO 23:56:10] my_main Estimated time left: 54 minutes, 17 seconds. Time passed: 3 hours, 12 minutes, 14 seconds
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:57274 disconnected
+[INFO 23:56:12] absl Shutdown gracefully.
+[INFO 23:56:12] absl Shutdown with return code: -15
+[INFO 23:56:12] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 22553 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-3n8wb_jb/
+[INFO 23:56:12] absl Connecting to: ws://127.0.0.1:22553/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 22553 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-3n8wb_jb/'
+Starting up...
+Startup Phase 1 complete
+[INFO 23:56:13] absl Connecting to: ws://127.0.0.1:22553/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:22553
+Startup Phase 3 complete. Ready for commands.
+[INFO 23:56:14] absl Connecting to: ws://127.0.0.1:22553/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:33362 accepted
+ReadyHandler: 127.0.0.1:33362 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 23:56:40] my_main Recent Stats | t_env:    1600869 | Episode:    32155
+battle_won_mean:           0.9316	dead_allies_mean:          1.4122	dead_enemies_mean:         4.8688	ep_length_mean:           45.6151
+epsilon:                   0.0500	grad_norm:                 7.1062	loss:                      0.3080	q_taken_mean:              2.6655
+return_mean:              19.5616	return_std:                1.6775	target_mean:               2.6698	td_error_abs:              0.3711
+test_battle_won_mean:      0.9760	test_dead_allies_mean:     0.7620	test_dead_enemies_mean:    4.9500	test_ep_length_mean:      42.5320
+test_return_mean:         19.8330	test_return_std:           1.0382	
+[INFO 00:02:18] my_main t_env: 1650882 / 2050000
+[INFO 00:02:18] my_main Estimated time left: 48 minutes, 57 seconds. Time passed: 3 hours, 18 minutes, 22 seconds
+[INFO 00:02:42] my_main Recent Stats | t_env:    1650882 | Episode:    33252
+battle_won_mean:           0.9281	dead_allies_mean:          1.4657	dead_enemies_mean:         4.8608	ep_length_mean:           45.4790
+epsilon:                   0.0500	grad_norm:                 4.3369	loss:                      0.3019	q_taken_mean:              2.5983
+return_mean:              19.5457	return_std:                1.6683	target_mean:               2.6010	td_error_abs:              0.3511
+test_battle_won_mean:      0.9840	test_dead_allies_mean:     0.7300	test_dead_enemies_mean:    4.9620	test_ep_length_mean:      42.1860
+test_return_mean:         19.8871	test_return_std:           0.8653	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:33362 disconnected
+[INFO 00:03:30] absl Shutdown gracefully.
+[INFO 00:03:30] absl Shutdown with return code: -15
+[INFO 00:03:30] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 22949 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-4z_trrsf/
+[INFO 00:03:30] absl Connecting to: ws://127.0.0.1:22949/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 22949 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-4z_trrsf/'
+Starting up...
+Startup Phase 1 complete
+[INFO 00:03:31] absl Connecting to: ws://127.0.0.1:22949/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:22949
+Startup Phase 3 complete. Ready for commands.
+[INFO 00:03:32] absl Connecting to: ws://127.0.0.1:22949/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:32970 accepted
+ReadyHandler: 127.0.0.1:32970 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 00:08:26] my_main t_env: 1700906 / 2050000
+[INFO 00:08:26] my_main Estimated time left: 42 minutes, 45 seconds. Time passed: 3 hours, 24 minutes, 29 seconds
+[INFO 00:08:50] my_main Recent Stats | t_env:    1700906 | Episode:    34348
+battle_won_mean:           0.9170	dead_allies_mean:          1.6330	dead_enemies_mean:         4.8158	ep_length_mean:           45.6974
+epsilon:                   0.0500	grad_norm:                 3.7912	loss:                      0.3056	q_taken_mean:              2.4726
+return_mean:              19.4480	return_std:                1.9249	target_mean:               2.4784	td_error_abs:              0.3623
+test_battle_won_mean:      0.9820	test_dead_allies_mean:     0.7380	test_dead_enemies_mean:    4.9600	test_ep_length_mean:      42.1600
+test_return_mean:         19.8766	test_return_std:           0.9059	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:32970 disconnected
+[INFO 00:10:50] absl Shutdown gracefully.
+[INFO 00:10:50] absl Shutdown with return code: -15
+[INFO 00:10:50] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 24580 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-_prb_1xl/
+[INFO 00:10:50] absl Connecting to: ws://127.0.0.1:24580/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 24580 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-_prb_1xl/'
+Starting up...
+Startup Phase 1 complete
+[INFO 00:10:51] absl Connecting to: ws://127.0.0.1:24580/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:24580
+Startup Phase 3 complete. Ready for commands.
+[INFO 00:10:52] absl Connecting to: ws://127.0.0.1:24580/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:45066 accepted
+ReadyHandler: 127.0.0.1:45066 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 00:14:33] my_main t_env: 1750944 / 2050000
+[INFO 00:14:33] my_main Estimated time left: 36 minutes, 36 seconds. Time passed: 3 hours, 30 minutes, 37 seconds
+[INFO 00:14:57] my_main Recent Stats | t_env:    1750944 | Episode:    35428
+battle_won_mean:           0.9104	dead_allies_mean:          1.6495	dead_enemies_mean:         4.8209	ep_length_mean:           46.2887
+epsilon:                   0.0500	grad_norm:                 7.6834	loss:                      0.3534	q_taken_mean:              2.4318
+return_mean:              19.4218	return_std:                1.8944	target_mean:               2.4267	td_error_abs:              0.3876
+test_battle_won_mean:      0.9840	test_dead_allies_mean:     0.7500	test_dead_enemies_mean:    4.9580	test_ep_length_mean:      42.1340
+test_return_mean:         19.8793	test_return_std:           0.9332	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:45066 disconnected
+[INFO 00:18:14] absl Shutdown gracefully.
+[INFO 00:18:14] absl Shutdown with return code: -15
+[INFO 00:18:14] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 15839 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-8jbpzizf/
+[INFO 00:18:15] absl Connecting to: ws://127.0.0.1:15839/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 15839 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-8jbpzizf/'
+Starting up...
+Startup Phase 1 complete
+[INFO 00:18:16] absl Connecting to: ws://127.0.0.1:15839/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:15839
+Startup Phase 3 complete. Ready for commands.
+[INFO 00:18:17] absl Connecting to: ws://127.0.0.1:15839/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:37786 accepted
+ReadyHandler: 127.0.0.1:37786 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 00:20:42] my_main t_env: 1800959 / 2050000
+[INFO 00:20:42] my_main Estimated time left: 30 minutes, 36 seconds. Time passed: 3 hours, 36 minutes, 46 seconds
+[INFO 00:21:06] my_main Recent Stats | t_env:    1800959 | Episode:    36510
+battle_won_mean:           0.9334	dead_allies_mean:          1.5485	dead_enemies_mean:         4.8750	ep_length_mean:           46.1742
+epsilon:                   0.0500	grad_norm:                 8.7627	loss:                      0.3129	q_taken_mean:              2.4451
+return_mean:              19.5894	return_std:                1.5903	target_mean:               2.4602	td_error_abs:              0.3693
+test_battle_won_mean:      0.9840	test_dead_allies_mean:     0.7620	test_dead_enemies_mean:    4.9540	test_ep_length_mean:      42.0740
+test_return_mean:         19.8789	test_return_std:           0.9367	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:37786 disconnected
+[INFO 00:25:39] absl Shutdown gracefully.
+[INFO 00:25:39] absl Shutdown with return code: -15
+[INFO 00:25:39] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 22482 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-pjmbqqqv/
+[INFO 00:25:39] absl Connecting to: ws://127.0.0.1:22482/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 22482 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-pjmbqqqv/'
+Starting up...
+Startup Phase 1 complete
+[INFO 00:25:40] absl Connecting to: ws://127.0.0.1:22482/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:22482
+Startup Phase 3 complete. Ready for commands.
+[INFO 00:25:41] absl Connecting to: ws://127.0.0.1:22482/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:45842 accepted
+ReadyHandler: 127.0.0.1:45842 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 00:26:54] my_main t_env: 1850968 / 2050000
+[INFO 00:26:54] my_main Estimated time left: 24 minutes, 41 seconds. Time passed: 3 hours, 42 minutes, 58 seconds
+[INFO 00:27:19] my_main Recent Stats | t_env:    1850968 | Episode:    37602
+battle_won_mean:           0.9359	dead_allies_mean:          1.5650	dead_enemies_mean:         4.8819	ep_length_mean:           45.9114
+epsilon:                   0.0500	grad_norm:                 8.9073	loss:                      0.3076	q_taken_mean:              2.3727
+return_mean:              19.6053	return_std:                1.5824	target_mean:               2.3814	td_error_abs:              0.3661
+test_battle_won_mean:      0.9880	test_dead_allies_mean:     0.7820	test_dead_enemies_mean:    4.9640	test_ep_length_mean:      42.1620
+test_return_mean:         19.9212	test_return_std:           0.7358	
+[INFO 00:33:00] my_main t_env: 1900988 / 2050000
+[INFO 00:33:00] my_main Estimated time left: 18 minutes, 8 seconds. Time passed: 3 hours, 49 minutes, 3 seconds
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:45842 disconnected
+[INFO 00:33:04] absl Shutdown gracefully.
+[INFO 00:33:04] absl Shutdown with return code: -15
+[INFO 00:33:04] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 24427 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-ah37o6cb/
+[INFO 00:33:04] absl Connecting to: ws://127.0.0.1:24427/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 24427 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-ah37o6cb/'
+Starting up...
+Startup Phase 1 complete
+[INFO 00:33:05] absl Connecting to: ws://127.0.0.1:24427/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:24427
+Startup Phase 3 complete. Ready for commands.
+[INFO 00:33:06] absl Connecting to: ws://127.0.0.1:24427/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:59532 accepted
+ReadyHandler: 127.0.0.1:59532 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 00:33:29] my_main Recent Stats | t_env:    1900988 | Episode:    38706
+battle_won_mean:           0.9301	dead_allies_mean:          1.5321	dead_enemies_mean:         4.8757	ep_length_mean:           45.4453
+epsilon:                   0.0500	grad_norm:                 6.5485	loss:                      0.2779	q_taken_mean:              2.4263
+return_mean:              19.5808	return_std:                1.5680	target_mean:               2.4285	td_error_abs:              0.3393
+test_battle_won_mean:      0.9860	test_dead_allies_mean:     0.7440	test_dead_enemies_mean:    4.9600	test_ep_length_mean:      42.0220
+test_return_mean:         19.9014	test_return_std:           0.8541	
+[INFO 00:38:57] my_main t_env: 1951018 / 2050000
+[INFO 00:38:57] my_main Estimated time left: 11 minutes, 46 seconds. Time passed: 3 hours, 55 minutes, 1 seconds
+[INFO 00:39:19] my_main Recent Stats | t_env:    1951018 | Episode:    39810
+battle_won_mean:           0.9196	dead_allies_mean:          1.5822	dead_enemies_mean:         4.8310	ep_length_mean:           45.2387
+epsilon:                   0.0500	grad_norm:                10.7120	loss:                      0.3478	q_taken_mean:              2.3420
+return_mean:              19.4721	return_std:                1.8283	target_mean:               2.3601	td_error_abs:              0.3967
+test_battle_won_mean:      0.9860	test_dead_allies_mean:     0.7460	test_dead_enemies_mean:    4.9580	test_ep_length_mean:      41.8460
+test_return_mean:         19.9024	test_return_std:           0.8427	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:59532 disconnected
+[INFO 00:40:09] absl Shutdown gracefully.
+[INFO 00:40:09] absl Shutdown with return code: -15
+[INFO 00:40:09] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 23664 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-g67ngicd/
+[INFO 00:40:09] absl Connecting to: ws://127.0.0.1:23664/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 23664 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-g67ngicd/'
+Starting up...
+Startup Phase 1 complete
+[INFO 00:40:10] absl Connecting to: ws://127.0.0.1:23664/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:23664
+Startup Phase 3 complete. Ready for commands.
+[INFO 00:40:11] absl Connecting to: ws://127.0.0.1:23664/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:55210 accepted
+ReadyHandler: 127.0.0.1:55210 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+[INFO 00:44:51] my_main t_env: 2001052 / 2050000
+[INFO 00:44:51] my_main Estimated time left: 5 minutes, 46 seconds. Time passed: 4 hours, 54 seconds
+[INFO 00:45:13] my_main Recent Stats | t_env:    2001052 | Episode:    40922
+battle_won_mean:           0.9345	dead_allies_mean:          1.4781	dead_enemies_mean:         4.8656	ep_length_mean:           44.9768
+epsilon:                   0.0500	grad_norm:                 5.0007	loss:                      0.2831	q_taken_mean:              2.3940
+return_mean:              19.5571	return_std:                1.7616	target_mean:               2.3857	td_error_abs:              0.3348
+test_battle_won_mean:      0.9820	test_dead_allies_mean:     0.8060	test_dead_enemies_mean:    4.9560	test_ep_length_mean:      41.9080
+test_return_mean:         19.8830	test_return_std:           0.8958	
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:55210 disconnected
+[INFO 00:47:14] absl Shutdown gracefully.
+[INFO 00:47:14] absl Shutdown with return code: -15
+[INFO 00:47:14] absl Launching SC2: /home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64 -listen 127.0.0.1 -port 18718 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-5p3v09jo/
+[INFO 00:47:14] absl Connecting to: ws://127.0.0.1:18718/sc2api, attempt: 0, running: True
+Version: B75689 (SC2.4.10)
+Build: Aug 12 2019 17:16:57
+Command Line: '"/home/qiaodan/StarCraftII/Versions/Base75689/SC2_x64" -listen 127.0.0.1 -port 18718 -dataDir /home/qiaodan/StarCraftII/ -tempDir /tmp/sc-5p3v09jo/'
+Starting up...
+Startup Phase 1 complete
+[INFO 00:47:15] absl Connecting to: ws://127.0.0.1:18718/sc2api, attempt: 1, running: True
+Startup Phase 2 complete
+Creating stub renderer...
+Listening on: 127.0.0.1:18718
+Startup Phase 3 complete. Ready for commands.
+[INFO 00:47:16] absl Connecting to: ws://127.0.0.1:18718/sc2api, attempt: 2, running: True
+ConnectHandler: Request from 127.0.0.1:33032 accepted
+ReadyHandler: 127.0.0.1:33032 ready
+Requesting to join a single player game
+Configuring interface options
+Configure: raw interface enabled
+Configure: feature layer interface disabled
+Configure: score interface disabled
+Configure: render interface disabled
+Launching next game.
+Next launch phase started: 2
+Next launch phase started: 3
+Next launch phase started: 4
+Next launch phase started: 5
+Next launch phase started: 6
+Next launch phase started: 7
+Next launch phase started: 8
+Game has started.
+Using default stable ids, none found at: /home/qiaodan/StarCraftII/stableid.json
+Successfully loaded stable ids: GameData\stableid.json
+Sending ResponseJoinGame
+RequestQuit command received.
+Closing Application...
+DataHandler: unable to parse websocket frame.
+CloseHandler: 127.0.0.1:33032 disconnected
+[INFO 00:50:32] absl Shutdown gracefully.
+[INFO 00:50:32] absl Shutdown with return code: -15
+[INFO 00:50:32] my_main Finished Training
+Exiting Main
+Stopping all threads
+Thread Thread-1 is alive! Is daemon: False
+Thread joined
+Exiting script
+[DEBUG 00:50:33] my_main Finished after 4:06:38.
+[INFO 00:50:33] pymarl Completed after 4:06:38

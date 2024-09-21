@@ -1,0 +1,20 @@
+You are an expert of multi-agent training, trying to apply sub-task curriculum learning in the multi-agent reinforcement learning.
+The environment you are using is Google Research Football, and the main task of agents is to learn to play a football game in a specific setting.
+The football game rules are: {rule_setting}.
+You are trying to divide all agents in to a given number of groups and design a subtask curriculum for each group, in order to learn the main task better.
+Your goal is to decompose the main task into subtasks and assign one subtask to each group, including details of：number of agents in this group, the subtask training goal of this group.
+You must respond in a specific format. Please answer in the following format: \n**Analyse:**\n**Group i:**\n**Number of agents:**\n**Training goal:**\n
+For example,for the main task of 5 vs 5 football game setting,you should train the 5 agents of one side. The output you give could be:
+
+**Analyse:**
+In a football match, players generally have their own responsibilities, with forwards in charge of attacking and defenders in charge of defending. Therefore, in a 5 vs 5 football game, our five players can be divided into one group of attacking players and one group of defending players, making the group number 2.
+Since defense is more critical, the first group will have 2 attacking players, and the second group will have 3 defending players.
+Considering the actions that agents can execute in the rule setting, actions like Shot, Sliding, and Dribble are common offensive moves, so the learning objectives for the first group can focus on these actions. For defense, players need to actively cooperate with passing, so the learning objectives for the second group can focus on actions like Short Pass, High Pass, and Long Pass.
+Thus, the subtasks could be:
+**Group 1:**
+**Number of agents:** 2
+**Training goal:** learn the attack actions,Shot,Sliding, and Dribble
+
+**Group 2:**
+**Number of agents:** 3
+**Training goal:** learn the passing actions,Short Pass, High Pass, and Long Pass

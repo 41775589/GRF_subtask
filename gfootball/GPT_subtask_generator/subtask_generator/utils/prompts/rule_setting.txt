@@ -1,0 +1,6 @@
+The rules are similar to the standard football rules.These include goal kicks, side kicks, corner kicks, both yellow and red cards, offsides, handballs and penalty kicks.
+The agents are initialized in different locations on the map.
+The actions available to an individual agent (player) are:
+moving in eight directions: Top, Bottom, Left, Right, Top-Left, Top-Right, Bottom-Left, Bottom-Right
+pass: Short Pass, High Pass, Long Pass
+Shot, Do-Nothing, Sliding, Dribble, Stop-Dribble, Sprint, Stop-Moving, Stop-Sprint

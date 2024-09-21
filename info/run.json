@@ -1,0 +1,114 @@
+{
+  "artifacts": [],
+  "command": "my_main",
+  "experiment": {
+    "base_dir": "/home/qiaodan/Projects/epymarl/src",
+    "dependencies": [
+      "numpy==1.24.3",
+      "PyYAML==5.3.1",
+      "sacred==0.8.6",
+      "torch==1.13.0"
+    ],
+    "mainfile": "main.py",
+    "name": "pymarl",
+    "repositories": [
+      {
+        "commit": "3253d0999b938c51d55b489396c14def09c8a915",
+        "dirty": true,
+        "url": "git@github.com:uoe-agents/epymarl.git"
+      },
+      {
+        "commit": "3253d0999b938c51d55b489396c14def09c8a915",
+        "dirty": true,
+        "url": "git@github.com:uoe-agents/epymarl.git"
+      },
+      {
+        "commit": "3253d0999b938c51d55b489396c14def09c8a915",
+        "dirty": true,
+        "url": "git@github.com:uoe-agents/epymarl.git"
+      }
+    ],
+    "sources": [
+      [
+        "main.py",
+        "_sources/main_13b8bb9811c97eef9c57f60007af822a.py"
+      ],
+      [
+        "run.py",
+        "_sources/run_26065774bc37be3b53a2389cece7c645.py"
+      ],
+      [
+        "utils/logging.py",
+        "_sources/logging_c5e4eb72527526b53c5189a8a6e9808d.py"
+      ]
+    ]
+  },
+  "heartbeat": "2024-09-10T16:50:33.367099",
+  "host": {
+    "ENV": {},
+    "cpu": "AMD Ryzen Threadripper 3990X 64-Core Processor",
+    "gpus": {
+      "driver_version": "535.129.03",
+      "gpus": [
+        {
+          "model": "NVIDIA GeForce RTX 3090",
+          "persistence_mode": false,
+          "total_memory": 24576
+        },
+        {
+          "model": "NVIDIA GeForce RTX 3090",
+          "persistence_mode": false,
+          "total_memory": 24576
+        }
+      ]
+    },
+    "hostname": "ubun",
+    "os": [
+      "Linux",
+      "Linux-5.15.0-101-generic-x86_64-with-glibc2.10"
+    ],
+    "python_version": "3.8.0"
+  },
+  "meta": {
+    "command": "my_main",
+    "config_updates": {
+      "env_args": {
+        "map_name": "2s3z"
+      }
+    },
+    "named_configs": [],
+    "options": {
+      "--beat-interval": null,
+      "--capture": null,
+      "--comment": null,
+      "--debug": false,
+      "--enforce_clean": false,
+      "--file_storage": null,
+      "--force": false,
+      "--help": false,
+      "--id": null,
+      "--loglevel": null,
+      "--mongo_db": null,
+      "--name": null,
+      "--pdb": false,
+      "--print-config": false,
+      "--priority": null,
+      "--queue": false,
+      "--s3": null,
+      "--sql": null,
+      "--tiny_db": null,
+      "--unobserved": false,
+      "COMMAND": null,
+      "UPDATE": [
+        "env_args.map_name=2s3z"
+      ],
+      "help": false,
+      "with": true
+    }
+  },
+  "resources": [],
+  "result": null,
+  "start_time": "2024-09-10T12:43:55.469688",
+  "status": "COMPLETED",
+  "stop_time": "2024-09-10T16:50:33.345556"
+}
