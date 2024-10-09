@@ -45,7 +45,7 @@ def _process_reward_wrappers(env, rewards):
 
     # 动态加载自定义包装器
     for reward in rewards_list:
-        if reward.startswith('reward_'):  # 假设自定义包装器的参数以'reward_'开头
+        if reward.startswith('reward_'):  # 自定义包装器的参数以'reward_'开头
             wrapper_name = reward.split('_', 1)[1]  # 提取包装器名字 'name_of_wrapper'
             try:
                 # 动态导入模块，假设模块名与包装器名相同

@@ -2,6 +2,7 @@ import copy
 import logging
 import sys
 import os
+import datetime
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -26,7 +27,7 @@ sys.path.append(SRC_DIR)
 
 from run import *
 
-client = OpenAI(api_key=KEY)
+client = OpenAI(api_key="KEY")
 ROOT_DIR = os.getcwd()
 parent_dir = os.path.dirname(ROOT_DIR)
 GFOOTBALL_DIR = os.path.dirname(parent_dir)
@@ -35,6 +36,20 @@ MAP_DIR = os.path.join(FOOTBALL_MEDoE_DIR, 'doe_epymarl-main/src/envs/gfootball/
 REWARD_DIR = os.path.join(FOOTBALL_MEDoE_DIR, 'doe_epymarl-main/src/envs/gfootball/rewards')
 prompt_dir = f'{ROOT_DIR}/utils/prompts'
 logging.basicConfig(level=logging.INFO)
+
+Time = datetime.datetime.now()
+Time = Time.strftime("%Y-%m-%d-%H-%M-%S")
+OUTPUT_DIR = f"outputs/{Time}"
+MAP_DIR = f"{MAP_DIR}/{Time}"
+REWARD_DIR = f"{REWARD_DIR}/{Time}"
+# GRF_SCENARIO_DIR = f"{GFOOTBALL_DIR}/scenarios/{Time}"
+
+# 创建目标文件夹（如果不存在）
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+os.makedirs(MAP_DIR, exist_ok=True)
+os.makedirs(REWARD_DIR, exist_ok=True)
+# os.makedirs(GRF_SCENARIO_DIR, exist_ok=True)
+
 
 
 def file_to_string(filename):
@@ -248,7 +263,7 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
 
         response_cur = responses[response_id].message.content
 
-        with open(f"outputs/decomposition_layer0_decomposition{response_id}.py", 'w') as file:
+        with open(f"{OUTPUT_DIR}/decomposition_layer0_decomposition{response_id}.py", 'w') as file:
             file.writelines(response_cur + '\n')
 
         # logging.info(f"Iteration {iter}: Processing Code Run {response_id}")
@@ -292,7 +307,7 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
             response_scenario_cur = client.chat.completions.create(model=model,
                                                                    messages=cur_messages_s,
                                                                    temperature=temperature,
-                                                                   n=chunk_size)
+                                                                   n=1)
             reply_scenario = response_scenario_cur.choices[0].message.content
 
             # Regex patterns to extract python code enclosed in GPT response
@@ -325,12 +340,12 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
                 file.writelines("from . import *" + '\n')
                 file.writelines(scenario_code_string + '\n')
 
-            with open(f"outputs/scenario_layer0_decomposition{response_id}_subtask{group_id}.py", 'w') as file:
+            with open(f"{OUTPUT_DIR}/scenario_layer0_decomposition{response_id}_subtask{group_id}.py", 'w') as file:
                 file.writelines("from . import *" + '\n')
                 file.writelines(scenario_code_string + '\n')
 
             # Save the scenario in the GRF Env
-            with open(f"{GFOOTBALL_DIR}/scenarios/scenario_layer0_decomposition{response_id}_subtask{group_id}.py",
+            with open(f"{GFOOTBALL_DIR}/scenarios/{Time}/scenario_layer0_decomposition{response_id}_subtask{group_id}.py",
                       'w') as file:
                 file.writelines("from . import *" + '\n')
                 file.writelines(scenario_code_string + '\n')
@@ -355,6 +370,7 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
             for i in range(n_improve_iter):
                 total_samples_r = 0
                 responses_r = []
+                chunk_size_r = n_reward
 
                 while True:
                     if total_samples_r >= n_reward:
@@ -365,7 +381,7 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
                             reply_rewards_cur = client.chat.completions.create(model=model,
                                                                                messages=cur_messages_r,
                                                                                temperature=temperature,
-                                                                               n=chunk_size)
+                                                                               n=chunk_size_r)
                             total_samples_r += chunk_size
                             break
                         except Exception as e:
@@ -385,7 +401,7 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
                 rl_runs = []
                 #####################################
                 for response_r_id in range(n_reward):
-                    reply_reward = responses_r.message.content
+                    reply_reward = responses_r[response_r_id].message.content
                     print("REPLY REWARD: ", reply_reward)
                     print("REWARD TOKEN:", reply_rewards_cur.usage.prompt_tokens)
                     # Regex patterns to extract python code enclosed in GPT response
@@ -419,7 +435,7 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
                         file.writelines(reward_code_string + '\n')
 
                     with open(
-                            f"outputs/reward_layer0_decomposition{response_id}_subtask{group_id}_sample{response_r_id}.py",
+                            f"{OUTPUT_DIR}/reward_layer0_decomposition{response_id}_subtask{group_id}_sample{response_r_id}.py",
                             'w') as file:
                         file.writelines(reward_code_string + '\n')
 
@@ -451,120 +467,120 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
                     block_until_training(rl_filepath, log_status=True, iter_num=iter, response_id=response_id)
                     rl_runs.append(process)
 
-                # Gather RL training results and construct reward reflection
-                code_feedbacks = []
-                contents = []
-                # May change to winning rate
-                score_reward_mean = []
-                code_paths = []
-
-                exec_success = False
-                for response_r_id, (code_run, rl_run) in enumerate(zip(code_runs, rl_runs)):
-                    rl_run.communicate()
-                    rl_filepath = f"env_layer0_decomposition{response_id}_subtask{group_id}_sample{response_r_id}.txt"
-                    code_paths.append(
-                        f"reward_layer0_decomposition{response_id}_subtask{group_id}_sample{response_r_id}.py")
-                    try:
-                        with open(rl_filepath, 'r') as f:
-                            stdout_str = f.read()
-                    except:
-                        # content = execution_error_feedback.format(traceback_msg="Code Run cannot be executed due to function signature error! Please re-write an entirely new reward function!")
-                        content = execution_error_feedback.format(
-                            traceback_msg="Code Run cannot be executed because function is wrongly formatted! Please re-write an entirely new reward function!")
-                        content += code_output_tip_rewards
-                        contents.append(content)
-                        score_reward_mean.append(DUMMY_FAILURE)
-                        continue
-
-                    content = ''
-                    traceback_msg = filter_traceback(stdout_str)
-
-                    if traceback_msg == '':
-                        # If RL execution has no error, provide policy statistics feedback
-                        exec_success = True
-                        lines = stdout_str.split('\n')
-
-                        # Modify need: Check the result and change the epoch_freq here
-                        for i, line in enumerate(lines):
-                            if line.startswith('Tensorboard Directory:'):
-                                break
-                        tensorboard_logdir = line.split(':')[-1].strip()
-                        tensorboard_logs = load_tensorboard_logs(tensorboard_logdir)
-                        max_iterations = np.array(tensorboard_logs['gt_reward']).shape[0]
-                        epoch_freq = max(int(max_iterations // 10), 1)
-
-                        content += policy_feedback.format(epoch_freq=epoch_freq)
-
-                        # Modify need: Check the result reward format
-                        # Add reward components log to the feedback
-                        for metric in tensorboard_logs:
-                            if "/" not in metric:
-                                metric_cur = ['{:.2f}'.format(x) for x in tensorboard_logs[metric][::epoch_freq]]
-                                if "score_reward_mean" == metric:
-                                    score_reward_mean.append(tensorboard_logs[metric])
-                                    content += f"score_reward_mean: {metric_cur}\n"
-
-                        code_feedbacks.append(code_feedback)
-                        content += code_feedback
-                    else:
-                        # Otherwise, provide execution traceback error feedback
-                        score_reward_mean.append(DUMMY_FAILURE)
-                        content += execution_error_feedback.format(traceback_msg=traceback_msg)
-
-                    content += code_output_tip_rewards
-                    contents.append(content)
-
-                # Repeat the iteration if all code generation failed
-                if not exec_success and n_decomposition != 1:
-                    execute_rates.append(0.)
-                    max_scores.append(DUMMY_FAILURE)
-                    max_successes_reward_correlation.append(DUMMY_FAILURE)
-                    best_code_paths.append(None)
-                    logging.info(
-                        "All code generation failed! Repeat this iteration from the current message checkpoint!")
-                    continue
-
-                # Select the best code sample based on the success rate
-                best_sample_idx = np.argmax(np.array(score_reward_mean))
-                best_content = contents[best_sample_idx]
-
-                max_score = score_reward_mean[best_sample_idx]
-                # max_success_reward_correlation = reward_correlations[best_sample_idx]
-                execute_rate = np.sum(np.array(score_reward_mean) >= 0.) / n_decomposition
-
-                # Update the best Eureka Output
-                if max_score > max_score_overall:
-                    max_score_overall = max_score
-                    max_reward_code_path = code_paths[best_sample_idx]
-
-                execute_rates.append(execute_rate)
-                max_scores.append(max_score)
-                best_code_paths.append(code_paths[best_sample_idx])
-
-                logging.info(f"Iteration {iter}: Max Score: {max_score}, Execute Rate: {execute_rate}")
-                logging.info(f"Iteration {iter}: Best Generation ID: {best_sample_idx}")
-                logging.info(f"Iteration {iter}: GPT Output Content:\n" + responses[best_sample_idx]["message"][
-                    "content"] + "\n")
-                logging.info(f"Iteration {iter}: User Content:\n" + best_content + "\n")
-
-                if len(messages) == 2:
-                    cur_messages_r += [
-                        {"role": "assistant", "content": responses[best_sample_idx]["message"]["content"]}]
-                    cur_messages_r += [{"role": "user", "content": best_content}]
-                else:
-                    assert len(messages) == 4
-                    cur_messages_r[-2] = {"role": "assistant",
-                                          "content": responses[best_sample_idx]["message"]["content"]}
-                    cur_messages_r[-1] = {"role": "user", "content": best_content}
-
-            if max_reward_code_path is None:
-                logging.info("All iterations of code generation failed, aborting...")
-                logging.info("Please double check the output env_iter*_response*.txt files for repeating errors!")
-                exit()
-    # Execute the Main task using DOE:
+    #             # Gather RL training results and construct reward reflection
+    #             code_feedbacks = []
+    #             contents = []
+    #             # May change to winning rate
+    #             score_reward_mean = []
+    #             code_paths = []
+    #
+    #             exec_success = False
+    #             for response_r_id, (code_run, rl_run) in enumerate(zip(code_runs, rl_runs)):
+    #                 rl_run.communicate()
+    #                 rl_filepath = f"env_layer0_decomposition{response_id}_subtask{group_id}_sample{response_r_id}.txt"
+    #                 code_paths.append(
+    #                     f"reward_layer0_decomposition{response_id}_subtask{group_id}_sample{response_r_id}.py")
+    #                 try:
+    #                     with open(rl_filepath, 'r') as f:
+    #                         stdout_str = f.read()
+    #                 except:
+    #                     # content = execution_error_feedback.format(traceback_msg="Code Run cannot be executed due to function signature error! Please re-write an entirely new reward function!")
+    #                     content = execution_error_feedback.format(
+    #                         traceback_msg="Code Run cannot be executed because reward class is wrongly formatted! Please re-write an entirely new reward function!")
+    #                     content += code_output_tip_rewards
+    #                     contents.append(content)
+    #                     score_reward_mean.append(DUMMY_FAILURE)
+    #                     continue
+    #
+    #                 content = ''
+    #                 traceback_msg = filter_traceback(stdout_str)
+    #
+    #                 if traceback_msg == '':
+    #                     # If RL execution has no error, provide policy statistics feedback
+    #                     exec_success = True
+    #                     lines = stdout_str.split('\n')
+    #
+    #                     # Modify need: Check the result and change the epoch_freq here
+    #                     for i, line in enumerate(lines):
+    #                         if line.startswith('Tensorboard Directory:'):
+    #                             break
+    #                     tensorboard_logdir = line.split(':')[-1].strip()
+    #                     tensorboard_logs = load_tensorboard_logs(tensorboard_logdir)
+    #                     max_iterations = np.array(tensorboard_logs['gt_reward']).shape[0]
+    #                     epoch_freq = max(int(max_iterations // 10), 1)
+    #
+    #                     content += policy_feedback.format(epoch_freq=epoch_freq)
+    #
+    #                     # Modify need: Check the result reward format
+    #                     # Add reward components log to the feedback
+    #                     for metric in tensorboard_logs:
+    #                         if "/" not in metric:
+    #                             metric_cur = ['{:.2f}'.format(x) for x in tensorboard_logs[metric][::epoch_freq]]
+    #                             if "score_reward_mean" == metric:
+    #                                 score_reward_mean.append(tensorboard_logs[metric])
+    #                                 content += f"score_reward_mean: {metric_cur}\n"
+    #
+    #                     code_feedbacks.append(code_feedback)
+    #                     content += code_feedback
+    #                 else:
+    #                     # Otherwise, provide execution traceback error feedback
+    #                     score_reward_mean.append(DUMMY_FAILURE)
+    #                     content += execution_error_feedback.format(traceback_msg=traceback_msg)
+    #
+    #                 content += code_output_tip_rewards
+    #                 contents.append(content)
+    #
+    #             # Repeat the iteration if all code generation failed
+    #             if not exec_success and n_decomposition != 1:
+    #                 execute_rates.append(0.)
+    #                 max_scores.append(DUMMY_FAILURE)
+    #                 max_successes_reward_correlation.append(DUMMY_FAILURE)
+    #                 best_code_paths.append(None)
+    #                 logging.info(
+    #                     "All code generation failed! Repeat this iteration from the current message checkpoint!")
+    #                 continue
+    #
+    #             # Select the best code sample based on the success rate
+    #             best_sample_idx = np.argmax(np.array(score_reward_mean))
+    #             best_content = contents[best_sample_idx]
+    #
+    #             max_score = score_reward_mean[best_sample_idx]
+    #             # max_success_reward_correlation = reward_correlations[best_sample_idx]
+    #             execute_rate = np.sum(np.array(score_reward_mean) >= 0.) / n_decomposition
+    #
+    #             # Update the best Eureka Output
+    #             if max_score > max_score_overall:
+    #                 max_score_overall = max_score
+    #                 max_reward_code_path = code_paths[best_sample_idx]
+    #
+    #             execute_rates.append(execute_rate)
+    #             max_scores.append(max_score)
+    #             best_code_paths.append(code_paths[best_sample_idx])
+    #
+    #             logging.info(f"Iteration {iter}: Max Score: {max_score}, Execute Rate: {execute_rate}")
+    #             logging.info(f"Iteration {iter}: Best Generation ID: {best_sample_idx}")
+    #             logging.info(f"Iteration {iter}: GPT Output Content:\n" + responses[best_sample_idx]["message"][
+    #                 "content"] + "\n")
+    #             logging.info(f"Iteration {iter}: User Content:\n" + best_content + "\n")
+    #
+    #             if len(messages) == 2:
+    #                 cur_messages_r += [
+    #                     {"role": "assistant", "content": responses[best_sample_idx]["message"]["content"]}]
+    #                 cur_messages_r += [{"role": "user", "content": best_content}]
+    #             else:
+    #                 assert len(messages) == 4
+    #                 cur_messages_r[-2] = {"role": "assistant",
+    #                                       "content": responses[best_sample_idx]["message"]["content"]}
+    #                 cur_messages_r[-1] = {"role": "user", "content": best_content}
+    #
+    #         if max_reward_code_path is None:
+    #             logging.info("All iterations of code generation failed, aborting...")
+    #             logging.info("Please double check the output env_iter*_response*.txt files for repeating errors!")
+    #             exit()
+    # # Execute the Main task using DOE:
 
 
 
 if __name__ == "__main__":
-    main(model="gpt-3.5-turbo", n_decomposition=1, n_reward=2, temperature=1, task="gfootball", alg_cfg="doe_ia2c",
-         use_doe=False, n_improve_iter=10)
+    main(model="gpt-3.5-turbo", n_decomposition=1, n_reward=1, temperature=1, task="gfootball", alg_cfg="doe_ia2c",
+         use_doe=False, n_improve_iter=2)

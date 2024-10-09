@@ -2,7 +2,7 @@ gfootball.GPT_subtask_generator.subtask_generator.generator_one_level为单层�
 gfootball.GPT_subtask_generator.subtask_generator.generator_main为多层分解
 TODO：
 1. 多层分解使用的new_generation_loop函数
-2. 将self reflection封装为函数，奖励函数文件名覆盖问题
+2. 将self reflection封装为函数
 3. 检查训练结束后的result。修改适用于epymarl输出结果的epoch_freq的获取
 4. 增加结果中其他metric，如让环境输出winning rate
 5. 训练模型的保存与读取，用于父任务训练

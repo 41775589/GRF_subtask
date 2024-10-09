@@ -27,7 +27,6 @@ class CheckpointRewardWrapper(gym.RewardWrapper):
 
     for rew_index in range(len(reward)):
       o = observation[rew_index]
-      
       if reward[rew_index] == 1:
         reward[rew_index] += self._checkpoint_reward * (
             self._num_checkpoints -

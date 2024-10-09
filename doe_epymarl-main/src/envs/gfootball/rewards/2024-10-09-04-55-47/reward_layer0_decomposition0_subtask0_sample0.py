@@ -35,6 +35,7 @@ class CheckpointRewardWrapper(gym.RewardWrapper):
         self._collected_checkpoints[rew_index] = self._num_checkpoints
         continue
 
+      # Check if the active player has the ball.
       if ('ball_owned_team' not in o or
           o['ball_owned_team'] != 0 or
           'ball_owned_player' not in o or
@@ -43,7 +44,10 @@ class CheckpointRewardWrapper(gym.RewardWrapper):
 
       d = ((o['ball'][0] - 1) ** 2 + o['ball'][1] ** 2) ** 0.5
 
-      while (self._collected_checkpoints.get(rew_index, 0) < self._num_checkpoints):
+      # Collect the checkpoints.
+      # We give reward for distance 1 to 0.2.
+      while (self._collected_checkpoints.get(rew_index, 0) <
+             self._num_checkpoints):
         if self._num_checkpoints == 1:
           threshold = 0.99 - 0.8
         else:

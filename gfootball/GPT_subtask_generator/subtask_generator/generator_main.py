@@ -2,6 +2,7 @@ import copy
 import logging
 import sys
 import os
+import datetime
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -28,7 +29,7 @@ sys.path.append(SRC_DIR)
 from run import *
 
 
-client = OpenAI(api_key=KEY)
+client = OpenAI(api_key="KEY")
 ROOT_DIR = os.getcwd()
 parent_dir = os.path.dirname(ROOT_DIR)
 GFOOTBALL_DIR = os.path.dirname(parent_dir)
@@ -37,6 +38,19 @@ MAP_DIR = os.path.join(FOOTBALL_MEDoE_DIR, 'doe_epymarl-main/src/envs/gfootball/
 REWARD_DIR = os.path.join(FOOTBALL_MEDoE_DIR, 'doe_epymarl-main/src/envs/gfootball/rewards')
 prompt_dir = f'{ROOT_DIR}/utils/prompts'
 logging.basicConfig(level=logging.INFO)
+
+Time = datetime.datetime.now()
+Time = Time.strftime("%Y-%m-%d-%H-%M-%S")
+OUTPUT_DIR = f"outputs/{Time}"
+MAP_DIR = f"{MAP_DIR}/{Time}"
+REWARD_DIR = f"{REWARD_DIR}/{Time}"
+# GRF_SCENARIO_DIR = f"{GFOOTBALL_DIR}/scenarios/{Time}"
+
+# 创建目标文件夹（如果不存在）
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+os.makedirs(MAP_DIR, exist_ok=True)
+os.makedirs(REWARD_DIR, exist_ok=True)
+# os.makedirs(GRF_SCENARIO_DIR, exist_ok=True)
 
 def file_to_string(filename):
     with open(filename, 'r') as file:
@@ -259,7 +273,7 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
 
         response_cur = responses[response_id].message.content
 
-        with open(f"outputs/decomposition_layer0_decomposition{response_id}.py", 'w') as file:
+        with open(f"{OUTPUT_DIR}/decomposition_layer0_decomposition{response_id}.py", 'w') as file:
             file.writelines(response_cur + '\n')
 
         # logging.info(f"Iteration {iter}: Processing Code Run {response_id}")
@@ -336,7 +350,7 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
                 file.writelines("from . import *" + '\n')
                 file.writelines(scenario_code_string + '\n')
 
-            with open(f"outputs/scenario_layer0_decomposition{response_id}_subtask{group_id}.py", 'w') as file:
+            with open(f"{OUTPUT_DIR}/scenario_layer0_decomposition{response_id}_subtask{group_id}.py", 'w') as file:
                 file.writelines("from . import *" + '\n')
                 file.writelines(scenario_code_string + '\n')
 
@@ -402,7 +416,7 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
                 rl_runs = []
                 #####################################
                 for response_r_id in range(n_reward):
-                    reply_reward = responses_r.message.content
+                    reply_reward = responses_r[response_r_id].message.content
                     print("REPLY REWARD: ",reply_reward)
                     print("REWARD TOKEN:", reply_rewards_cur.usage.prompt_tokens)
                     # Regex patterns to extract python code enclosed in GPT response
@@ -434,7 +448,7 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
                     with open(f"{REWARD_DIR}/reward_layer0_decomposition{response_id}_subtask{group_id}_sample{response_r_id}.py", 'w') as file:
                         file.writelines(reward_code_string + '\n')
 
-                    with open(f"outputs/reward_layer0_decomposition{response_id}_subtask{group_id}_sample{response_r_id}.py", 'w') as file:
+                    with open(f"{OUTPUT_DIR}/reward_layer0_decomposition{response_id}_subtask{group_id}_sample{response_r_id}.py",'w') as file:
                         file.writelines(reward_code_string + '\n')
 
                     # Save the reward function in the GRF Env

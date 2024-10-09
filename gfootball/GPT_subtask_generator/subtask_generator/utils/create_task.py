@@ -13,8 +13,8 @@ def create_task(root_dir, task, layer, response_id, response_r_id, num_agents, g
         data = yaml.safe_load(yamlfile)
 
     data["env_args"]["num_agents"] = num_agents
-    data["env_args"]["map_name"] = f'scenario_layer{layer}_decomposition{response_id}_subtask{group_id}.py'
-    data["env_args"]["rewards"] = f'reward_layer0_decomposition{response_id}_subtask{group_id}_sample{response_r_id}'
+    data["env_args"]["map_name"] = f'scenario_layer{layer}_decomposition{response_id}_subtask{group_id}'
+    data["env_args"]["rewards"] = f'scoring, reward_layer0_decomposition{response_id}_subtask{group_id}_sample{response_r_id}'
     # data["t_max"] = 200
     
     # Write the new YAML file
