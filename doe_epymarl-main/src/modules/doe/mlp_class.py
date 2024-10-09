@@ -137,7 +137,8 @@ class MLPClassifier:
     @classmethod
     def from_config_train(cls, n_agents, cfg, buffer_path):
         mlp_cfg = cfg.get("mlp")
-        role_list = [0] * n_agents
+        # 初始化role list，用-1代表没有分配角色
+        role_list = [-1] * n_agents
         role_ids = cfg.get("role_ids")
         # (0, ('defence', ['alice', 'bob'])) 和 (1, ('attack', ['carol', 'dave']))
         # 这里role_ids是字典，key是角色，value是agent_id
@@ -146,7 +147,7 @@ class MLPClassifier:
         for label, (_, role_agents_ids) in enumerate(role_ids.items()):
             for agent_id in role_agents_ids:
                 role_list[agent_id] = label
-        # role_list = [0, 0, 1, 1] 代表分别是 防御防御进攻进攻
+        # role_list = [0, 0, 1, 1, 1] 代表分别是 防御防御进攻进攻进攻，取决于任务num agents和yaml设置
 
         # 这段是为了load buffer,需要在run.py中添加一个save buffer的接口
         # 考虑转成字典，或者直接用torch load
