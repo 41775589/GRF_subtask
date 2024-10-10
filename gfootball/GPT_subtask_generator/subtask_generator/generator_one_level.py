@@ -453,6 +453,31 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
                     # # Find the freest GPU to run GPU-accelerated RL
                     # set_freest_gpu()
 
+
+                    """
+                    这里alg_cfg需要根据分解的子任务，创建对应的doe_ia2c，也就是 doe_classifer_cfg/  
+                        # 2s3z/3m
+                        role_ids:
+                            defence:  # classifier.role_list=[0,1,1,0,0]
+                                - 0 # agent id
+                            attack:
+                                - 2
+                                - 1
+                    在原始的doe代码中（目前版本），cfg文件表示的是两个子团队合并到一起时的任务分配列表
+                    即将defence和attack两个子团队合并到一起进行训练时的config设定
+
+                    而在每个子团队训练时，需要调用对应的子团队cfg，因此需要在创建子任务后生成各自的yaml文件
+                    比如one level分解为group 1和group2，就需要两个不同的cfg
+                    分别是 role_ids: defence: -0 和 role_ids: attack: -1
+
+                    当然如果group 1 & group 2已经是最小的子任务的话，那么就不要调用doe_ia2c，
+                    而是直接调用ia2c进行训练，并且在训练结束后存储各自的buffer.pt
+                    ref src/run.py Line 150 
+                    这个buffer pt会用于下次merge这两个子团队时train各自的doe classifier
+                    这部分有待一起讨论
+                    """
+                    # create doe_ia2c_subtask1.yaml and doe_ia2c_subtask2.yaml
+
                     # Execute the python file with flags
                     rl_filepath = f"env_decomposition{response_id}_subtask{group_id}.txt"
                     with open(rl_filepath, 'w') as f:

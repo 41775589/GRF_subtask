@@ -148,6 +148,7 @@ def run_sequential(args, logger):
     os.makedirs(buffer_save_path, exist_ok=True)
     
     # 用于检查doe模块，正式运行时删掉
+    # 正式训练时，只保存上一轮独立子任务各自的buffer，用于在下一轮merge团队时训练子任务的doe classifier
     th.save(buffer.data, "{}/buffer.pt".format(buffer_save_path))
 
     # 检查是否需要 DoE，并 train/load classifier

@@ -62,13 +62,13 @@ doe_classifier_cfg:
     test_fraction: 0.1
     learning_rate: 1e-2
 
+  # 2s3z/3m
   role_ids:
-    defence:  # agent role
+    defence:  # classifier.role_list=[0,1,1,0,0]
       - 0 # agent id
-      - 1 # agent id
     attack:
       - 2
-      - 3
+      - 1
 
 
 
