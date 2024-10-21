@@ -147,11 +147,13 @@ def run_sequential(args, logger):
     buffer_save_path = os.path.join(dirname(dirname(abspath(__file__))), args.local_results_path, "buffers", args.env, args.env_args.get("map_name"))
     os.makedirs(buffer_save_path, exist_ok=True)
     
-    # 用于检查doe模块，正式运行时删掉
-    # 正式训练时，只保存上一轮独立子任务各自的buffer，用于在下一轮merge团队时训练子任务的doe classifier
-    th.save(buffer.data, "{}/buffer.pt".format(buffer_save_path))
+    # # 用于检查doe模块，正式运行时删掉
+    # # 正式训练时，只保存上一轮独立子任务各自的buffer，用于在下一轮merge团队时训练子任务的doe classifier
+    # th.save(buffer.data, "{}/buffer.pt".format(buffer_save_path))
 
     # 检查是否需要 DoE，并 train/load classifier
+    # 这里的逻辑需要适配单层任务分解，即原始子任务上 doe=False，只需要save buffer，不需要doe cls
+    # 在 merge team 上，doe = True，load merged buffer files 并且 train doe cls，加载给每个agent
     if args.use_doe:  # 假设我们在配置中添加了一个 use_doe 标志
         doe_classifier = doe_classifier_config_loader(
             n_agents=args.n_agents,
@@ -167,6 +169,9 @@ def run_sequential(args, logger):
         if hasattr(learner, 'set_doe_classifier'):
             learner.set_doe_classifier(doe_classifier)
         print("DoE_classifier is set to mac and learner")
+    else:
+        save_buffer = True
+        # 这里为了配合单层分解，简单设置；如果多层分解的话，需要额外添加参数“save buffer”来控制load cls还是train cls
 
     if args.use_cuda:
         learner.cuda()
@@ -294,7 +299,11 @@ def run_sequential(args, logger):
     if args.save_doe_buffer and args.pretrain_tasks:
         # buffer_save_path = os.path.join(args.local_results_path, "buffers", args.env, args.env_args.get("map_name"))
         # os.makedirs(os.path.dirname(buffer_save_path), exist_ok=True)
-        th.save(buffer.data, "{}/buffer.pt".format(buffer_save_path))
+
+        # 为每个子任务团队分别 save buffer
+        # subtask_roles 需要进行匹配，TBD
+        th.save(buffer.data, "{}/buffer_{}.pt".format(buffer_save_path, subtask_roles))
+
         logger.console_logger.info(f"Save buffer to {buffer_save_path} nfor DoE Classifier")
 
 

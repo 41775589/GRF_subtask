@@ -91,6 +91,102 @@ def config_copy(config):
         return [config_copy(v) for v in config]
     else:
         return deepcopy(config)
+    
+
+
+def train_merge_team(subtask1, subtask2, env, is_doe, yaml_config, training_exp_id):
+
+    group1 = {}
+    group2 = {}
+
+    team_num = group1_num + group2_num
+    # merge team agent number
+    role_list = group1_task + group2_task
+    # [attack attack defend]
+
+    sub_buffer_1 = group1.buffer
+    sub_buffer_2 = group2.buffer
+    full_doe_buffer = sub_buffer_1 + sub_buffer_2
+    full_doe_buffer_path = 
+    save(full_doe_buffer, full_doe_buffer_path)
+
+    doe_config_txt = {"role_ids": role_list}
+    add_component = {mac: "doe_mac", 
+                    use_doe: true
+                    doe_type: "mlp"
+
+                    ent_coef: 1.0 
+
+                    base_lr: 1.0
+                    base_ent: 1.0
+
+                    boost_lr_coef: 1.0
+                    boost_ent_coef: 1.0
+
+                    # doe_classifier_cfg
+                    doe_classifier_cfg:
+                        doe_type: mlp
+                        load_mode: train
+                        save_classifier: true
+                        save_pathname: mlp_classifier.pt
+                        path_to_classifier: mlp_classifier.pt
+                        mlp:
+                            hidden_sizes:
+                            - 128
+                            batch_size: 512
+                            test_fraction: 0.1
+                            learning_rate: 1e-2
+
+                        role_ids:
+                            defence:  # classifier.role_list=[0,1,1,0,0]
+                            - 0 # agent id
+                            attack:
+                            - 2
+                            - 1}
+    
+    rename_component = {name: "doe_ia2c"}
+
+    a2c_yaml_file = "ia2c_env_decomp_id.yaml"
+    doe_yaml_content = a2c_yaml_file + rename_component + add_component
+    doe_yaml_file = os.write("doe_ia2c_env_decomp_id.yaml", doe_yaml_content)
+    # generate doe ia2c yaml
+
+    origin_env_config = "grf"
+    # full task original env 
+
+    # train full task w/w. doe
+    if is_doe:
+        rl_logpath = f"full_training_depth_1_{training_exp_id}_doe.txt"
+        with open(rl_logpath, 'w') as f:
+            script_path = f'{SRC_DIR}/main.py'
+            params = [
+                'python', '-u', script_path,
+                f'--config={doe_yaml_file}',
+                f'--env-config={origin_env_config}',
+                '--is_doe=True'
+            ]
+            full_process = subprocess.Popen(params, stdout=f, stderr=f)
+        # block_until_training(rl_logpath, log_status=True, iter_num=iter, response_id=response_id)
+    else:
+        rl_logpath = f"full_training_depth_1_{training_exp_id}.txt"
+        with open(rl_logpath, 'w') as f:
+            script_path = f'{SRC_DIR}/main.py'
+            params = [
+                'python', '-u', script_path,
+                f'--config={a2c_yaml_file}',
+                f'--env-config={origin_env_config}',
+                '--is_doe=False'
+            ]
+            full_process = subprocess.Popen(params, stdout=f, stderr=f)
+        # block_until_training(rl_logpath, log_status=True, iter_num=iter, response_id=response_id)
+
+    full_rl_training_performance = []
+    full_rl_training_performance.append(full_process)
+    save(full_rl_training_performance)
+
+    print('Merged Full Training Has Finished')
+
+
 
 
 def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, n_improve_iter):
@@ -252,6 +348,7 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
         total_completion_token += response_cur.usage.completion_tokens
         total_token += response_cur.usage.total_tokens
 
+    # n_dec 代表分解几层，本py用于单层深度分解 
     if n_decomposition == 1:
         logging.info(f"Decompositions Generation: GPT Output:\n " + responses[0].message.content + "\n")
 
@@ -259,10 +356,19 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
     logging.info(
         f"Decompositions Generation: Prompt Tokens: {prompt_tokens}, Completion Tokens: {total_completion_token}, Total Tokens: {total_token}")
 
+
+    """修改plan: response 0 和 1 的循环，添加一个check，如果是0，就调用ia2c训练并保存buffer/ckpt/yaml信息
+        如果是1，并且 is doe true，那么利用子团队yaml信息创建doe的yaml，调用进行训练
+        问题是，这样可能需要early stop或者某种metric，不知道是reward不好还是doe的不好（需要一种缺保doe是expert的判断条件）"""
+
+
+
     for response_id in range(n_decomposition):
 
         response_cur = responses[response_id].message.content
+        # responses是 len=2 的list，每个都是dict
 
+        # 这里的命名文件等待zihao更新，用于创建env和reward
         with open(f"{OUTPUT_DIR}/decomposition_layer0_decomposition{response_id}.py", 'w') as file:
             file.writelines(response_cur + '\n')
 
@@ -289,6 +395,9 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
             print(f"Number of agents: {group['number_of_agents']}")
             print(f"Training goal: {group['training_goal']}")
 
+
+        # 分别训练两个子团队任务
+        # if use_doe, 每个子团队任务训练结束后的buffer要保存，用于训练 doe classifier
         for group_id in range(len(groups)):
             # Scenario generation
             logging.info(
@@ -309,6 +418,7 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
                                                                    temperature=temperature,
                                                                    n=1)
             reply_scenario = response_scenario_cur.choices[0].message.content
+            # 提取prompt和env代码，生成训练任务scenario
 
             # Regex patterns to extract python code enclosed in GPT response
             patterns = [
@@ -350,6 +460,8 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
                 file.writelines("from . import *" + '\n')
                 file.writelines(scenario_code_string + '\n')
 
+            # 生成子任务的环境代码保存到py文件
+
             # Reward generation and improving:
             logging.info(
                 f"Rewards Generation: Generating {n_reward} samples for Decomposition {response_id} Group{group_id} with {model}")
@@ -367,10 +479,14 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
             cur_messages_r.append({"role": "system", "content": cur_initial_system_rewards})
             cur_messages_r.append({"role": "user", "content": cur_initial_user_rewards})
 
+
+            # 尝试几次 reward 生成 batch，默认2
             for i in range(n_improve_iter):
                 total_samples_r = 0
                 responses_r = []
                 chunk_size_r = n_reward
+
+                # n reward 为 1
 
                 while True:
                     if total_samples_r >= n_reward:
@@ -395,11 +511,15 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
                         exit()
 
                     responses_r.extend(reply_rewards_cur.choices)
+                # responses r是一个list，用于存储根据message r询问LLM得到的reward，这里只cue 1次
+
 
                 ####################################
                 code_runs = []
                 rl_runs = []
                 #####################################
+
+
                 for response_r_id in range(n_reward):
                     reply_reward = responses_r[response_r_id].message.content
                     print("REPLY REWARD: ", reply_reward)
@@ -429,6 +549,7 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
 
                     print("Reward Code String 2:", reward_code_string)
 
+                    # response id是分解几层，response r id是sample的reward function个数
                     with open(
                             f"{REWARD_DIR}/reward_layer0_decomposition{response_id}_subtask{group_id}_sample{response_r_id}.py",
                             'w') as file:
@@ -448,6 +569,8 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
                     # Create Task YAML files
                     create_task(CONFIG_ROOT_DIR, task, 0, response_id, response_r_id, group['number_of_agents'],
                                 group['group_number'] - 1, suffix)
+                    
+                    # 到此为止是生成了 for group -> for n_prove 几个reward -> for reward id 第几个reward的train feedback
 
                     ####################################################################################################################################################################################################
                     # # Find the freest GPU to run GPU-accelerated RL
@@ -476,7 +599,10 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
                     这个buffer pt会用于下次merge这两个子团队时train各自的doe classifier
                     这部分有待一起讨论
                     """
-                    # create doe_ia2c_subtask1.yaml and doe_ia2c_subtask2.yaml
+
+                    # 在这里控制是保存buffer还是load buffer，修改 src/main 中 run 的逻辑
+                    # 在单层分解中，为了简化过程，我们设定默认子任务训练都保存buffer
+                    # 在多层分解中，需要额外考虑save/load逻辑
 
                     # Execute the python file with flags
                     rl_filepath = f"env_decomposition{response_id}_subtask{group_id}.txt"
@@ -491,6 +617,8 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
                     # Modified the check of successful training
                     block_until_training(rl_filepath, log_status=True, iter_num=iter, response_id=response_id)
                     rl_runs.append(process)
+
+                # 完成了reward次数的RL training，收集了所有的traj
 
                 # Gather RL training results and construct reward reflection
                 code_feedbacks = []
@@ -602,10 +730,20 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
                 logging.info("All iterations of code generation failed, aborting...")
                 logging.info("Please double check the output env_iter*_response*.txt files for repeating errors!")
                 exit()
-    # Execute the Main task using DOE:
+
+            # 完成了第一个子任务 reward 生成
+
+        # 完成了 所有子任务 reward 生成
+
+    # 完成了所有深度 n decomposition 的任务生成，Execute the Main task using w/w. DOE:
+
+    train_merge_team(subtask1, subtask2, env_origin, use_doe, yaml_config)
+    # create idoe yaml config, train with src/main
+    # 这种写法是每个子任务自己的性能提升自己的表现，先用着，后面再考虑与merge后技能的表现
 
 
-
+# 这里 alg_cfg 用于训练子任务的team，需要用 ia2c，不能用 doe
+# 额外甚至 merge_doe 来控制是否用 doe 训练 merge 的完整算法
 if __name__ == "__main__":
-    main(model="gpt-3.5-turbo", n_decomposition=1, n_reward=1, temperature=1, task="gfootball", alg_cfg="doe_ia2c",
-         use_doe=False, n_improve_iter=2)
+    main(model="gpt-3.5-turbo", n_decomposition=1, n_reward=1, temperature=1, task="gfootball", alg_cfg="ia2c",
+         use_doe=True, n_improve_iter=2)
