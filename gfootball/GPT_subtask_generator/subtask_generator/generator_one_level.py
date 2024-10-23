@@ -18,6 +18,7 @@ from utils.extract_task_code import *
 from copy import deepcopy
 import collections
 import yaml
+import torch
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 FOOTBALL_MEDoE_DIR = os.path.abspath(os.path.join(current_dir, "../../../"))
@@ -94,62 +95,175 @@ def config_copy(config):
     
 
 
-def train_merge_team(subtask1, subtask2, env, is_doe, yaml_config, training_exp_id):
+def train_merge_team(groups, is_doe, decompose_id, buffer_dir):
 
-    group1 = {}
-    group2 = {}
+    # for index, group in enumerate(groups):
+    #     globals()[f'group_{index}'] = group
 
-    team_num = group1_num + group2_num
-    # merge team agent number
-    role_list = group1_task + group2_task
+    team_structure = {
+        "total_members": 0,
+        "num_subteams": len(groups),
+        "task_assignments": {}
+    }
+
+    # 记录当前的队员 ID
+    current_id = 0
+
+    # 遍历每个 group，将信息合并
+    for group in groups:
+        group_id = group["group_number"]
+        num_agents = group["number_of_agents"]
+        
+        # 更新总成员数量
+        team_structure["total_members"] += num_agents
+        
+        # 为每个任务分配队员 ID
+        task_assignments = {
+            "task": group["training_goal"],
+            "member_ids": list(range(current_id, current_id + num_agents))
+        }
+        
+        # 更新当前 ID
+        current_id += num_agents
+        
+        # 将任务分配信息添加到队伍结构中
+        team_structure["task_assignments"][f"group_{group_id}"] = task_assignments
+
+    # {
+    #     "total_members": 8,
+    #     "num_subteams": 2,
+    #     "task_assignments": {
+    #         "group_1": {
+    #             "task": "攻防训练",
+    #             "member_ids": [0, 1, 2, 3, 4]
+    #         },
+    #         "group_2": {
+    #             "task": "进攻训练",
+    #             "member_ids": [5, 6, 7]
+    #         },
+    #     }
+    # }
+
+    role_list = []
+    # 初始化任务 ID 计数器
+    task_id_counter = 0
+
+    # 遍历每个子团队，提取任务信息
+    for group_key, group_info in team_structure["task_assignments"].items():
+        member_ids = group_info["member_ids"]
+        
+        # 为每个成员添加对应的任务 ID
+        role_list.extend([task_id_counter] * len(member_ids))
+        
+        # 任务 ID 计数器加 1
+        task_id_counter += 1
+
+    # [0, 0, 0, 0, 0, 1, 1, 2, 2, 2, 2]
     # [attack attack defend]
 
-    sub_buffer_1 = group1.buffer
-    sub_buffer_2 = group2.buffer
-    full_doe_buffer = sub_buffer_1 + sub_buffer_2
-    full_doe_buffer_path = 
-    save(full_doe_buffer, full_doe_buffer_path)
 
-    doe_config_txt = {"role_ids": role_list}
-    add_component = {mac: "doe_mac", 
-                    use_doe: true
-                    doe_type: "mlp"
+    # 把团队角色信息转为role ids
+    role_ids = {}
+    for agent_id, role in enumerate(role_list):
+        task_name = list(team_structure["task_assignments"].values())[role]["task"]  # 获取任务名称
+        if task_name not in role_ids:
+            role_ids[task_name] = []
+        role_ids[task_name].append(agent_id)
+    # role_ids:
+    #   "defence":
+        #   - 0
+        #   - 1
+        #   - 2
+    #   "attack":
+        #   - 3
+        #   - 4
 
-                    ent_coef: 1.0 
 
-                    base_lr: 1.0
-                    base_ent: 1.0
+    # 读取 ia2c_ns.yaml 作为模板
+    template_file_path = 'GRF_SUBTASK/doe_epymarl-main/src/config/algs/ia2c_ns.yaml'
+    with open(template_file_path, 'r', encoding='utf-8') as template_file:
+        template_data = yaml.safe_load(template_file)
 
-                    boost_lr_coef: 1.0
-                    boost_ent_coef: 1.0
+    # 修改模板数据以生成 doe_ia2c.yaml 格式
+    # 这里根据需要修改参数为doe
+    template_data['mac'] = "doe_mac"  # 修改 mac
+    template_data['target_update_interval_or_tau'] = 0.01  # 修改更新间隔
+    template_data['learner'] = "doe_ia2c_learner"  # 修改学习器
+    template_data['entropy_coef'] = 0.01  # 修改熵系数
+    template_data['use_rnn'] = True  # 使用 RNN
+    template_data['critic_type'] = "ac_critic"  # 修改评论家类型
+    template_data['name'] = "doe_ia2c"  # 修改名称
 
-                    # doe_classifier_cfg
-                    doe_classifier_cfg:
-                        doe_type: mlp
-                        load_mode: train
-                        save_classifier: true
-                        save_pathname: mlp_classifier.pt
-                        path_to_classifier: mlp_classifier.pt
-                        mlp:
-                            hidden_sizes:
-                            - 128
-                            batch_size: 512
-                            test_fraction: 0.1
-                            learning_rate: 1e-2
+    # 添加 DoE 相关参数
+    doe_params = {
+        "use_doe": True,
+        "doe_type": "mlp",
+        "ent_coef": 1.0,
+        "base_lr": 1.0,
+        "base_ent": 1.0,
+        "boost_lr_coef": 1.0,
+        "boost_ent_coef": 1.0,
+        "doe_classifier_cfg": {
+            "doe_type": "mlp",
+            "load_mode": "train",
+            "save_classifier": True,
+            "save_pathname": "mlp_classifier.pt",
+            "path_to_classifier": "mlp_classifier.pt",
+            "mlp": {
+                "hidden_sizes": [128],
+                "batch_size": 512,
+                "test_fraction": 0.1,
+                "learning_rate": 1e-2
+            },
+            "role_ids": role_ids
+        }
+    }
 
-                        role_ids:
-                            defence:  # classifier.role_list=[0,1,1,0,0]
-                            - 0 # agent id
-                            attack:
-                            - 2
-                            - 1}
+    template_data.update(doe_params)
+    # 指定要写入的新的 YAML 文件路径, decompose_id 代表某一种分解方案/第N次分解尝试的名字
+    doe_config_name = "doe_ia2c_plan_{}".format(decompose_id)
+    new_yaml_file_path = 'GRF_SUBTASK/doe_epymarl-main/src/config/algs/{}.yaml'.format(doe_config_name)
+
+    # 将修改后的数据写入新的 YAML 文件
+    with open(new_yaml_file_path, 'w', encoding='utf-8') as new_yaml_file:
+        yaml.dump(template_data, new_yaml_file, allow_unicode=True)
+
+    print(f"New DOE YAML File {doe_config_name}")
+
+
+    # 处理buffer合并，用于doe training
+    from components.episode_buffer import ReplayBuffer
+
+    # 加载两个 buffer
+    # buffer_dir = 'path/to/your/buffer_directory'
+    buffer1 = torch.load(buffer_dir+'/buffer1.pt')
+    buffer2 = torch.load(buffer_dir+'/buffer2.pt')
+
+    total_agents = team_structure['total_members']  # 总团队的 agent 数量
+    new_buffer = ReplayBuffer(scheme=buffer1.scheme, 
+                            groups={**buffer1.groups, **buffer2.groups}, 
+                            buffer_size=total_agents, 
+                            max_seq_length=buffer1.max_seq_length)
     
-    rename_component = {name: "doe_ia2c"}
+    # 将 buffer1 的数据插入到新的 buffer 中
+    new_buffer.insert_episode_batch(buffer1)
 
-    a2c_yaml_file = "ia2c_env_decomp_id.yaml"
-    doe_yaml_content = a2c_yaml_file + rename_component + add_component
-    doe_yaml_file = os.write("doe_ia2c_env_decomp_id.yaml", doe_yaml_content)
-    # generate doe ia2c yaml
+    # 调整 buffer2 的 agent ID
+    adjusted_buffer2_data = {}
+    for key in buffer2.data.transition_data.keys():
+        adjusted_buffer2_data[key] = buffer2.data.transition_data[key].clone()
+        """这里需要调整所有的key id"""
+        if key == "actions":  # 假设 actions 需要调整
+            adjusted_buffer2_data[key] += buffer1.groups["team_1"]  # 将 agent ID 调整
+
+    # 将调整后的 buffer2 数据插入到新的 buffer 中
+    new_buffer.update(adjusted_buffer2_data, 
+                    slice(new_buffer.buffer_index, new_buffer.buffer_index + buffer2.batch_size), 
+                    slice(0, buffer2.max_seq_length))
+
+    # 现在 new_buffer 包含了两个团队的数据
+    # print(new_buffer)
+    # save new_buffer
 
     origin_env_config = "grf"
     # full task original env 
@@ -369,6 +483,7 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
         # responses是 len=2 的list，每个都是dict
 
         # 这里的命名文件等待zihao更新，用于创建env和reward
+        # response id 代表分解第几种分解方案，samples；layer0代表只分解一层
         with open(f"{OUTPUT_DIR}/decomposition_layer0_decomposition{response_id}.py", 'w') as file:
             file.writelines(response_cur + '\n')
 
@@ -737,7 +852,7 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
 
     # 完成了所有深度 n decomposition 的任务生成，Execute the Main task using w/w. DOE:
 
-    train_merge_team(subtask1, subtask2, env_origin, use_doe, yaml_config)
+    train_merge_team(groups, use_doe, decompose_id=, buffer_dir=)
     # create idoe yaml config, train with src/main
     # 这种写法是每个子任务自己的性能提升自己的表现，先用着，后面再考虑与merge后技能的表现
 
