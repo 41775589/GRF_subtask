@@ -143,22 +143,25 @@ def run_sequential(args, logger):
     # Learner
     learner = le_REGISTRY[args.learner](mac, buffer.scheme, logger, args)
 
+
     # 创建在训练结束时存储buffer用于DoE的路径
-    buffer_save_path = os.path.join(dirname(dirname(abspath(__file__))), args.local_results_path, "buffers", args.env, args.env_args.get("map_name"))
+    buffer_save_path = os.path.join(dirname(dirname(abspath(__file__))), args.local_results_path, "buffers", args.env)
     os.makedirs(buffer_save_path, exist_ok=True)
     
     # # 用于检查doe模块，正式运行时删掉
     # # 正式训练时，只保存上一轮独立子任务各自的buffer，用于在下一轮merge团队时训练子任务的doe classifier
     # th.save(buffer.data, "{}/buffer.pt".format(buffer_save_path))
 
-    # 检查是否需要 DoE，并 train/load classifier
-    # 这里的逻辑需要适配单层任务分解，即原始子任务上 doe=False，只需要save buffer，不需要doe cls
-    # 在 merge team 上，doe = True，load merged buffer files 并且 train doe cls，加载给每个agent
-    if args.use_doe:  # 假设我们在配置中添加了一个 use_doe 标志
+
+
+    # 如果要使用doe，那么加载对应agent的doe，并add到mac、learner
+    load_doe_buffer_path = args.doe_classifier_cfg.load_doe_buffer_path
+    if args.use_doe and args.load_old_doe:  # 如果使用doe训练，那么在这里load doe cls
         doe_classifier = doe_classifier_config_loader(
             n_agents=args.n_agents,
             cfg=args.doe_classifier_cfg,  # 本来是args.get("doe_classifier_cfg")，这里args是namespace形式
-            buffer_path= buffer_save_path
+            buffer_path = load_doe_buffer_path  # merge buffer load path,
+            load_mode='load'
         )
         
         # 为 MAC 设置 DoE classifier
@@ -169,9 +172,13 @@ def run_sequential(args, logger):
         if hasattr(learner, 'set_doe_classifier'):
             learner.set_doe_classifier(doe_classifier)
         print("DoE_classifier is set to mac and learner")
+
+        """当单层分解时，train doe不需要再save buffer；多层分解时再改这部分"""
+        save_buffer = False
     else:
         save_buffer = True
         # 这里为了配合单层分解，简单设置；如果多层分解的话，需要额外添加参数“save buffer”来控制load cls还是train cls
+
 
     if args.use_cuda:
         learner.cuda()
@@ -294,19 +301,23 @@ def run_sequential(args, logger):
             last_log_T = runner.t_env
     
     """ Save buffers for DoE Classifier """
-    # 添加两个参数，save_doe_buffer 代表是否存储buffer用于doe训练；
-    # pretrain_tasks True是source task训练，不需要doe，False是target task训练，需要加载doe；
-    if args.save_doe_buffer and args.pretrain_tasks:
-        # buffer_save_path = os.path.join(args.local_results_path, "buffers", args.env, args.env_args.get("map_name"))
-        # os.makedirs(os.path.dirname(buffer_save_path), exist_ok=True)
+    if args.save_buffer:
+        buffer_save_path_curr = buffer_save_path + f'/group_{group_id}'
+        th.save(buffer.data, buffer_save_path_curr)
+        logger.console_logger.info(f"Save buffer to {buffer_save_path} for DoE Classifier")
 
-        # 为每个子任务团队分别 save buffer
-        # subtask_roles 需要进行匹配，TBD
-        th.save(buffer.data, "{}/buffer_{}.pt".format(buffer_save_path, subtask_roles))
+    """ Train and Save DoE Classifier """
+    if args.save_doe_cls:
+        doe_classifier = doe_classifier_config_loader(
+            n_agents=args.n_agents,
+            cfg=args.doe_classifier_cfg,  # 本来是args.get("doe_classifier_cfg")，这里args是namespace形式
+            buffer_path = buffer_save_path_curr  # merge buffer load path,
+            load_mode='train'
+        )
 
-        logger.console_logger.info(f"Save buffer to {buffer_save_path} nfor DoE Classifier")
+        doe_classifier.save
 
-
+    
     runner.close_env()
     logger.console_logger.info("Finished Training")
 

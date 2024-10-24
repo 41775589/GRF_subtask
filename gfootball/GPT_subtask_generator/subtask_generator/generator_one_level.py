@@ -207,6 +207,7 @@ def train_merge_team(groups, is_doe, decompose_id, buffer_dir):
             "doe_type": "mlp",
             "load_mode": "train",
             "save_classifier": True,
+            "load_doe_buffer_path": buffer_dir,
             "save_pathname": "mlp_classifier.pt",
             "path_to_classifier": "mlp_classifier.pt",
             "mlp": {
@@ -235,18 +236,18 @@ def train_merge_team(groups, is_doe, decompose_id, buffer_dir):
     from components.episode_buffer import ReplayBuffer
 
     # 加载两个 buffer
-    # buffer_dir = 'path/to/your/buffer_directory'
+    # buffer_dir = 'GRF_SUBTASK/doe_epymarl-main/results/buffer/grf'
     buffer1 = torch.load(buffer_dir+'/buffer1.pt')
     buffer2 = torch.load(buffer_dir+'/buffer2.pt')
 
     total_agents = team_structure['total_members']  # 总团队的 agent 数量
-    new_buffer = ReplayBuffer(scheme=buffer1.scheme, 
+    doe_buffer = ReplayBuffer(scheme=buffer1.scheme, 
                             groups={**buffer1.groups, **buffer2.groups}, 
                             buffer_size=total_agents, 
                             max_seq_length=buffer1.max_seq_length)
     
     # 将 buffer1 的数据插入到新的 buffer 中
-    new_buffer.insert_episode_batch(buffer1)
+    doe_buffer.insert_episode_batch(buffer1)
 
     # 调整 buffer2 的 agent ID
     adjusted_buffer2_data = {}
@@ -257,15 +258,13 @@ def train_merge_team(groups, is_doe, decompose_id, buffer_dir):
             adjusted_buffer2_data[key] += buffer1.groups["team_1"]  # 将 agent ID 调整
 
     # 将调整后的 buffer2 数据插入到新的 buffer 中
-    new_buffer.update(adjusted_buffer2_data, 
-                    slice(new_buffer.buffer_index, new_buffer.buffer_index + buffer2.batch_size), 
+    doe_buffer.update(adjusted_buffer2_data, 
+                    slice(doe_buffer.buffer_index, doe_buffer.buffer_index + buffer2.batch_size), 
                     slice(0, buffer2.max_seq_length))
 
-    # 现在 new_buffer 包含了两个团队的数据
-    # print(new_buffer)
-    # save new_buffer
 
-    origin_env_config = "grf"
+
+    origin_env_config = "gfootball"
     # full task original env 
 
     # train full task w/w. doe
@@ -850,11 +849,12 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
 
         # 完成了 所有子任务 reward 生成
 
-    # 完成了所有深度 n decomposition 的任务生成，Execute the Main task using w/w. DOE:
+        # 完成了所有方案 n decomposition plan 的任务生成，Execute the Main task using w/w. DOE:
+        # decompose_id =  - 1 
 
-    train_merge_team(groups, use_doe, decompose_id=, buffer_dir=)
-    # create idoe yaml config, train with src/main
-    # 这种写法是每个子任务自己的性能提升自己的表现，先用着，后面再考虑与merge后技能的表现
+        train_merge_team(groups, use_doe, decompose_id=0, buffer_dir='GRF_SUBTASK/doe_epymarl-main/results/buffer/grf')
+        # create idoe yaml config, train with src/main
+        # 这种写法是每个子任务自己的性能提升自己的表现，先用着，后面再考虑与merge后技能的表现
 
 
 # 这里 alg_cfg 用于训练子任务的team，需要用 ia2c，不能用 doe

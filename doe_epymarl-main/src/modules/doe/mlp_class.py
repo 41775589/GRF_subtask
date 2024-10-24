@@ -125,13 +125,14 @@ class MLPClassifier:
 
     
     @classmethod
-    def from_config(cls, n_agents, cfg, buffer_path):
-        if cfg.get("load_mode") == "train":
+    def from_config(cls, n_agents, cfg, buffer_path, load_mode):
+        # if cfg.get("load_mode") == "train":
+        if load_mode == "train":
             classifier = cls.from_config_train(n_agents, cfg, buffer_path)
             if cfg.get("save_classifier", False):
-                classifier.save(cfg.get("save_pathname"))
+                classifier.save(cfg.get("save_doe_path"))
             return classifier
-        elif cfg.get("load_mode") == "load":
+        elif load_mode == "load":
             return cls.from_config_load(n_agents, cfg)
 
     @classmethod
@@ -242,7 +243,7 @@ class MLPClassifier:
             network_arch=None, 
             role_list=None
         )
-        absolute_path = os.path.abspath(cfg.path_to_classifier)
+        absolute_path = os.path.abspath(cfg.load_doe_path)
         loaded_mlps = torch.load(absolute_path)
         
         # sanity check
