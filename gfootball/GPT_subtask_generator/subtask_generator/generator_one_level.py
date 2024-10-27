@@ -99,10 +99,6 @@ def merge_doe_cls(groups, n_agents, role_list, doe_path, merge_doe_name):
     merged_classifier = None
     merge_id = 0
 
-    """ To LZH 
-    这里需要按照文件夹结构调整一下相对路径
-    """
-    from modules.doe import doe_classifier_config_loader
 
     # 遍历每个组，加载对应的 DoE 分类器
     for group in groups:
