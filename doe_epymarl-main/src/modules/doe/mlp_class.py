@@ -135,6 +135,8 @@ class MLPClassifier:
             return classifier
         elif load_mode == "load":
             return cls.from_config_load(n_agents, cfg, buffer_path)
+        # elif load_mode == "merge":
+        #     return cls.from_merge_config(n_agents, cfg)
 
     @classmethod
     def from_config_train(cls, n_agents, cfg, buffer_path):
@@ -151,15 +153,14 @@ class MLPClassifier:
                 role_list[agent_id] = label
         # role_list = [0, 0, 1, 1, 1] 代表分别是 防御防御进攻进攻进攻，取决于任务num agents和yaml设置
 
-        # 这段是为了load buffer,需要在run.py中添加一个save buffer的接口
-        # 考虑转成字典，或者直接用torch load
-        # 这里 mlp cfg 是doe的局部变量，无法导入args.local_path = results，写死成results
         # buffer_save_path = os.path.join("results", "buffers", mlp_cfg.env, mlp_cfg.env_args.map_name, "buffer.pt")
+
+        """ To LZH
+        这里写死的buffer.pt，需要配合多层分解重新命名规则，参考 generator_one_level line 913注释，命名规则一致即可
+        """
         if not os.path.exists(buffer_path):
             raise FileNotFoundError(f"Buffer file not found at {buffer_path}")
         exp_buffers = torch.load(os.path.join(buffer_path, "buffer.pt"))
-
-        """这里写死的buffer.pt，需要配合多层分解重新命名规则"""
 
         # 考虑有时候用episode data而不是transitions,getattr
         transition_data = exp_buffers.transition_data
@@ -212,17 +213,6 @@ class MLPClassifier:
             train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
             test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
 
-
-            # states = torch.concat(states)
-            # labels = torch.concat(labels)
-            # dataset = SimpleListDataset(states, labels)
-            # train_size = int(test_fraction * len(dataset))
-            # test_size = len(dataset) - train_size
-            # train_dataset, test_dataset = torch.utils.data.random_split(dataset,
-            #                                                             [train_size, test_size])
-            # train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-            # test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
-
         network_arch = [states[0].size().numel(), *hidden_sizes, 1]
 
         return cls(
@@ -257,21 +247,37 @@ class MLPClassifier:
         classifier.mlps = loaded_mlps
         return classifier
 
-    """Merge 模式，返回一个空类，用于加载其他doe cls的参数"""
-    @classmethod
-    def from_merge_config(cls, n_agents, role_list):
-        # 创建一个空的 MLPClassifier 实例
-        return cls(
-            n_agents=n_agents,
-            train_dataloader=None,  # 不需要训练数据加载器
-            test_dataloader=None,   # 不需要测试数据加载器
-            network_arch=[0] * 3,   # 可以设置为默认的空网络架构，或根据需要调整
-            role_list=role_list,     # 使用合并后的角色列表
-            learning_rate=1e-2,      # 默认学习率
-            batch_size=256,          # 默认批量大小
-            test_period=5,           # 默认测试周期
-            obs_mask=None             # 根据需要设置
-        )
+
+
+    """ Merge 模式，返回一个空类，网络参数与cfg是一样的，只是cls.mlps里包含的agent个数不同，用于加载其他doe cls的参数 """
+    # @classmethod
+    # def from_merge_config(cls, n_agents, cfg):
+
+    #     # 初始化role list，用-1代表没有分配角色
+    #     role_list = [-1] * n_agents
+    #     role_ids = cfg.get("role_ids")
+    #     # (0, ('defence', ['alice', 'bob'])) 和 (1, ('attack', ['carol', 'dave']))
+    #     # 这里role_ids是字典，key是角色，value是agent_id
+
+    #     # 设置角色列表
+    #     for label, (_, role_agents_ids) in enumerate(role_ids.items()):
+    #         for agent_id in role_agents_ids:
+    #             role_list[agent_id] = label
+    #     # role_list = [0, 0, 1, 1, 1] 代表分别是 防御防御进攻进攻进攻，取决于任务num agents和yaml设置
+
+
+    #     # 创建一个空的 MLPClassifier 实例
+    #     return cls(
+    #         n_agents=n_agents,
+    #         train_dataloader=None,  # 不需要训练数据加载器
+    #         test_dataloader=None,   # 不需要测试数据加载器
+    #         network_arch=[0] * 3,   # 可以设置为默认的空网络架构，或根据需要调整
+    #         role_list=role_list,     # 使用合并后的角色列表
+    #         learning_rate=1e-2,      # 默认学习率
+    #         batch_size=256,          # 默认批量大小
+    #         test_period=5,           # 默认测试周期
+    #         obs_mask=None             # 根据需要设置
+    #     )
 
 
 

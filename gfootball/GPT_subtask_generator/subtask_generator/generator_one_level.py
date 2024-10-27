@@ -94,57 +94,47 @@ def config_copy(config):
         return deepcopy(config)
     
 
-def merge_doe_cls(groups):
-
-
+def merge_doe_cls(groups, n_agents, role_list, doe_path, merge_doe_name):
     # 初始化合并后的分类器
     merged_classifier = None
     merge_id = 0
 
+    """ To LZH 
+    这里需要按照文件夹结构调整一下相对路径
+    """
+    from modules.doe import doe_classifier_config_loader
 
     # 遍历每个组，加载对应的 DoE 分类器
-    for group_name in groups:
-        # 构建文件路径
-        classifier_path = f"path/to/classifiers/{group_name}_classifier.pt"
+    for group in groups:
+        # 构建文件路径, 0_classifier.pt
+        group_id = group["group_number"]
+        classifier_path = f"{doe_path}/{group_id}_classifier.pt"
         
         # 加载分类器
         classifier_i = torch.load(classifier_path)
 
-        # 创建初始化一个 merged cls
+        # 创建初始化一个 merged cls，因为load可以直接加载原来的类的所有属性，我们只需要扩展classifier_i的mlps尺寸，更新 self.n_agents即可
+        # 避免重新指定各种网络参数
         if merged_classifier is None:
+            # merged_classifier = doe_classifier_config_loader(n_agents, merge_cfg, doe_path, load_mode='merge')
+            merged_classifier = copy.deepcopy(classifier_i)
+            merged_classifier.n_agents = n_agents
+            merged_classifier.role_list = role_list
+            # 扩展 lr 和 mlps 的数量
+            merged_classifier.learning_rates = [merged_classifier.learning_rates[0]] * n_agents
+            merged_classifier.mlps = [merged_classifier.mlps[0]] * n_agents
 
-            # 假设你有一个配置字典 cfg
-            """用下面的merge cfg传入"""
-            merge_cfg = {
-                "doe_type": "mlp",  # 指定要使用的分类器类型
-                # 其他配置参数...
-            }
+        # # 确保当前分类器的 mlps 列表长度与合并后的代理数量一致
+        # assert classifier.n_agents == len(classifier1.mlps) + len(classifier2.mlps)
 
-            # 假设你有 n_agents 和 buffer_path
-            n_agents = groups.num_agents
-            buffer_path = "path/to/buffer"
-            # load_mode = "load"  # 或者其他模式
-
-            # 使用配置加载分类器
-            classifier = doe_classifier_config_loader(n_agents, merge_cfg, buffer_path, load_mode='merge')
-
-        """
-        合并历史分类器的参数到当前分类器中。
-        classifier1 和 classifier2 是要合并的 MLPClassifier 实例。
-        """
-        # 确保当前分类器的 mlps 列表长度与合并后的代理数量一致
-        assert classifier.n_agents = len(classifier1.mlps) + len(classifier2.mlps)
-        # 把当前组里的 0-n 个 doe，加载到总的 classifier 的 i - i+n-1 上
-        for agent_id in range(num[doe_id]):
-            classifier.mlps[merge_id].load_state_dict(classifier_i.mlps[agent_id].state_dict())
+        # 合并历史分类器的参数到当前分类器中
+        for doe_i in classifier_i.mlps:
+            merged_classifier.mlps[merge_id].load_state_dict(doe_i.state_dict())
             merge_id += 1
 
-    merge_doe_name = 'tbd'
+    assert merge_id == n_agents-1
     # 保存合并后的分类器
-    torch.save(merged_classifier, f'path/to/merged_classifier{merge_doe_name}.pt')
-
-
-    return merge_doe_name
+    torch.save(merged_classifier, f'{doe_path}/{merge_doe_name}.pt')
 
 
 
@@ -208,14 +198,14 @@ def train_merge_team(groups, is_doe, decompose_id, buffer_dir):
         # 任务 ID 计数器加 1
         task_id_counter += 1
 
-    # [0, 0, 0, 0, 0, 1, 1, 2, 2, 2, 2]
+    # role_list = [0, 0, 0, 0, 0, 1, 1, 2, 2, 2, 2]，可用于指定merged doe的role ids
     # [attack attack defend]
 
 
     # 把团队角色信息转为role ids
     role_ids = {}
     for agent_id, role in enumerate(role_list):
-        task_name = list(team_structure["task_assignments"].values())[role]["task"]  # 获取任务名称
+        task_name = list(team_structure["task_assignments"].values())[role]["task"]  # 获取子团队任务名称
         if task_name not in role_ids:
             role_ids[task_name] = []
         role_ids[task_name].append(agent_id)
@@ -230,22 +220,12 @@ def train_merge_team(groups, is_doe, decompose_id, buffer_dir):
 
     """
     To LZH:
-    这里需要考虑加相对路径，修改 template file path 的位置，以及template可以换成ia2c
+    这里需要考虑加相对路径，修改 template file path 的位置，以及template config name 可以换成ia2c，作为基础参数模版，可以用于训练非doe的
     """
-
-    """
-    Todo QD
-    做一个cls doe pt文件的读取的merge，以及save为新的pt，保存路径，把merge后cls路径写入参数，用于run
-    为了方便创建 doe merge，还是要先创建 cfg，再去run里面合并？但是这样load
-    """
-
-    # merge的地址，保存到cfg参数
-    merged_doe_name = merge_doe_cls(groups)
-    cfg.load_doe_path = merged_doe_name
-
 
     # 读取 ia2c_ns.yaml 作为模板,也可以用ia2c
-    template_file_path = 'GRF_SUBTASK/doe_epymarl-main/src/config/algs/ia2c_ns.yaml'
+    template_config_name = 'ia2c'
+    template_file_path = f'GRF_SUBTASK/doe_epymarl-main/src/config/algs/{template_config_name}.yaml'
     with open(template_file_path, 'r', encoding='utf-8') as template_file:
         template_data = yaml.safe_load(template_file)
 
@@ -257,6 +237,10 @@ def train_merge_team(groups, is_doe, decompose_id, buffer_dir):
     template_data['use_rnn'] = True  # 使用 RNN
     template_data['critic_type'] = "ac_critic"  # 修改评论家类型
     template_data['name'] = "doe_ia2c"  # 修改名称
+
+    # 指定 merge 以后的 full team doe cls 存储名称
+    merged_doe_name = 'doe_ia2c_merge'
+    save_current_layer_merged_doe_path = 'full_team_doe'
 
     # 添加 DoE 相关参数
     doe_params = {
@@ -272,8 +256,8 @@ def train_merge_team(groups, is_doe, decompose_id, buffer_dir):
             "load_mode": "train",
             "save_classifier": True,  # 首次训练没有doe，不用save，不过这里已经是merge阶段，而且使用doe，那么肯定要true
             "load_doe_buffer_path": buffer_dir,
-            "save_doe_name": "save_mlp_classifier.pt",
-            "load_doe_name": "load_mlp_classifier.pt",
+            "save_doe_name": f"{save_current_layer_merged_doe_path}.pt",
+            "load_doe_name": f"{merged_doe_name}.pt",  # 用于训练 merge team 的 doe cls，直接 load
             "mlp": {
                 "hidden_sizes": [128],
                 "batch_size": 512,
@@ -286,14 +270,19 @@ def train_merge_team(groups, is_doe, decompose_id, buffer_dir):
 
     template_data.update(doe_params)
     # 指定要写入的新的 YAML 文件路径, decompose_id 代表某一种分解方案/第N次分解尝试的名字
-    doe_config_name = "doe_ia2c_plan_{}".format(decompose_id)
-    new_yaml_file_path = 'GRF_SUBTASK/doe_epymarl-main/src/config/algs/{}.yaml'.format(doe_config_name)
+    merged_doe_config_name = "doe_ia2c_plan_{}_merged".format(decompose_id)
+    new_yaml_file_path = 'GRF_SUBTASK/doe_epymarl-main/src/config/algs/{}.yaml'.format(merged_doe_config_name)
 
     # 将修改后的数据写入新的 YAML 文件
     with open(new_yaml_file_path, 'w', encoding='utf-8') as new_yaml_file:
         yaml.dump(template_data, new_yaml_file, allow_unicode=True)
 
-    print(f"New DOE YAML File {doe_config_name}")
+    print(f"New DOE YAML File {merged_doe_config_name}")
+
+    # merge doe cls，保存到cfg.merge_doe_name
+    merge_cfg_doe_params = template_data["doe_classifier_cfg"]
+    merge_doe_cls(groups, team_structure["total_members"], role_list, buffer_dir, merged_doe_name)
+
 
     """本来考虑merge buffer再用于train doe cls，现在通过修改run中的加载doe逻辑，直接在每次训练中save cls和merge cls，不用再对齐buffer数据维度"""
     # # 处理buffer合并，用于doe training
@@ -328,30 +317,31 @@ def train_merge_team(groups, is_doe, decompose_id, buffer_dir):
     #                 slice(0, buffer2.max_seq_length))
 
 
-
+    # 开始 train full team 在原始任务上
+    # 默认如果用doe了，那么就是完全都用doe调节训练过程参数；如果不用doe，那么就是作为对比baseline
+    """ To LZH
+    这个环境名字目前写死 gfootball， smac 时可以改"""
     origin_env_config = "gfootball"
-    # full task original env 
 
-    # train full task w/w. doe
     if is_doe:
-        rl_logpath = f"full_training_depth_1_{training_exp_id}_doe.txt"
+        rl_logpath = f"full_training_depth_1_{origin_env_config}_doe.txt"
         with open(rl_logpath, 'w') as f:
             script_path = f'{SRC_DIR}/main.py'
             params = [
                 'python', '-u', script_path,
-                f'--config=ia2c_ns',
+                f'--config={merged_doe_config_name}',
                 f'--env-config={origin_env_config}',
                 '--is_doe=True'
             ]
             full_process = subprocess.Popen(params, stdout=f, stderr=f)
         # block_until_training(rl_logpath, log_status=True, iter_num=iter, response_id=response_id)
     else:
-        rl_logpath = f"full_training_depth_1_{training_exp_id}.txt"
+        rl_logpath = f"full_training_depth_1_{origin_env_config}.txt"
         with open(rl_logpath, 'w') as f:
             script_path = f'{SRC_DIR}/main.py'
             params = [
                 'python', '-u', script_path,
-                f'--config={doe_config_name}',
+                f'--config={template_config_name}',
                 f'--env-config={origin_env_config}',
                 '--is_doe=False'
             ]
@@ -757,28 +747,28 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
                     # set_freest_gpu()
 
 
-                    """
-                    这里alg_cfg需要根据分解的子任务，创建对应的doe_ia2c，也就是 doe_classifer_cfg/  
-                        # 2s3z/3m
-                        role_ids:
-                            defence:  # classifier.role_list=[0,1,1,0,0]
-                                - 0 # agent id
-                            attack:
-                                - 2
-                                - 1
-                    在原始的doe代码中（目前版本），cfg文件表示的是两个子团队合并到一起时的任务分配列表
-                    即将defence和attack两个子团队合并到一起进行训练时的config设定
+                    # """
+                    # 这里alg_cfg需要根据分解的子任务，创建对应的doe_ia2c，也就是 doe_classifer_cfg/  
+                    #     # 2s3z/3m
+                    #     role_ids:
+                    #         defence:  # classifier.role_list=[0,1,1,0,0]
+                    #             - 0 # agent id
+                    #         attack:
+                    #             - 2
+                    #             - 1
+                    # 在原始的doe代码中（目前版本），cfg文件表示的是两个子团队合并到一起时的任务分配列表
+                    # 即将defence和attack两个子团队合并到一起进行训练时的config设定
 
-                    而在每个子团队训练时，需要调用对应的子团队cfg，因此需要在创建子任务后生成各自的yaml文件
-                    比如one level分解为group 1和group2，就需要两个不同的cfg
-                    分别是 role_ids: defence: -0 和 role_ids: attack: -1
+                    # 而在每个子团队训练时，需要调用对应的子团队cfg，因此需要在创建子任务后生成各自的yaml文件
+                    # 比如one level分解为group 1和group2，就需要两个不同的cfg
+                    # 分别是 role_ids: defence: -0 和 role_ids: attack: -1
 
-                    当然如果group 1 & group 2已经是最小的子任务的话，那么就不要调用doe_ia2c，
-                    而是直接调用ia2c进行训练，并且在训练结束后存储各自的buffer.pt
-                    ref src/run.py Line 150 
-                    这个buffer pt会用于下次merge这两个子团队时train各自的doe classifier
-                    这部分有待一起讨论
-                    """
+                    # 当然如果group 1 & group 2已经是最小的子任务的话，那么就不要调用doe_ia2c，
+                    # 而是直接调用ia2c进行训练，并且在训练结束后存储各自的buffer.pt
+                    # ref src/run.py Line 150 
+                    # 这个buffer pt会用于下次merge这两个子团队时train各自的doe classifier
+                    # 这部分有待一起讨论
+                    # """
 
                     # 在这里控制是保存buffer还是load buffer，修改 src/main 中 run 的逻辑
                     # 在单层分解中，为了简化过程，我们设定默认子任务训练都保存buffer
@@ -918,6 +908,15 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
         上面第一阶段子任务训练 alg_cfg 需要用 ia2c/ia2c_ns，不能用 doe 干扰RL训练
         但是需要 save buffer 并得到 doe cls，然后在第二阶段 merge train 时 merge cls
         这种写法是每个子任务自己的性能提升自己的表现，先用着，以后的研究中再考虑与merge后技能的表现
+        """
+
+        """To LZH
+        这里暂时采用的绝对路径 buffer_dir 其实就是一组分解plan中每个阶段的doe相关数据，
+        比如分解方案一，分解两层，
+        路径就是 results/buffer/grf/plan1 + layer0_group0_buffer.pt & layer0_group0_doe.pt & layer0_group1_doe.pt etc.
+        需要调整对应的命名方式，上面只是举例，
+
+        以及这里 decompose_id = 0 是按照第0个decompose方案的意思设计的，如果不对可以改，主要影响 yaml 文件命名
         """
         train_merge_team(groups, use_doe, decompose_id=0, buffer_dir='GRF_SUBTASK/doe_epymarl-main/results/buffer/grf')
         

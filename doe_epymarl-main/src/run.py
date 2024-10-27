@@ -155,10 +155,10 @@ def run_sequential(args, logger):
         # 如果是后续分解，不使用doe训练（采用普通merge训练的方法作为baseline），也不需要 load
 
         """
-        这里要考虑如何实现，merge multi doe classifier, 
+        这里考虑实现 merge multi doe classifier, 
         merge 操作放在 generator_one.py中，把那个cls存到这个path中
         并且名字要作为参数传入，或者作为args中传入
-        这样可以保证run的逻辑不变，不用必须merge。
+        这样可以保证run的逻辑不变，只需要 load 即可，不需要train和merge
         """
 
         # 假设已经merge完了，load doe cls "buffer_path/doe_name.pt"
