@@ -94,11 +94,61 @@ def config_copy(config):
         return deepcopy(config)
     
 
+def merge_doe_cls(groups):
+
+
+    # 初始化合并后的分类器
+    merged_classifier = None
+    merge_id = 0
+
+
+    # 遍历每个组，加载对应的 DoE 分类器
+    for group_name in groups:
+        # 构建文件路径
+        classifier_path = f"path/to/classifiers/{group_name}_classifier.pt"
+        
+        # 加载分类器
+        classifier_i = torch.load(classifier_path)
+
+        # 创建初始化一个 merged cls
+        if merged_classifier is None:
+
+            # 假设你有一个配置字典 cfg
+            """用下面的merge cfg传入"""
+            merge_cfg = {
+                "doe_type": "mlp",  # 指定要使用的分类器类型
+                # 其他配置参数...
+            }
+
+            # 假设你有 n_agents 和 buffer_path
+            n_agents = groups.num_agents
+            buffer_path = "path/to/buffer"
+            # load_mode = "load"  # 或者其他模式
+
+            # 使用配置加载分类器
+            classifier = doe_classifier_config_loader(n_agents, merge_cfg, buffer_path, load_mode='merge')
+
+        """
+        合并历史分类器的参数到当前分类器中。
+        classifier1 和 classifier2 是要合并的 MLPClassifier 实例。
+        """
+        # 确保当前分类器的 mlps 列表长度与合并后的代理数量一致
+        assert classifier.n_agents = len(classifier1.mlps) + len(classifier2.mlps)
+        # 把当前组里的 0-n 个 doe，加载到总的 classifier 的 i - i+n-1 上
+        for agent_id in range(num[doe_id]):
+            classifier.mlps[merge_id].load_state_dict(classifier_i.mlps[agent_id].state_dict())
+            merge_id += 1
+
+    merge_doe_name = 'tbd'
+    # 保存合并后的分类器
+    torch.save(merged_classifier, f'path/to/merged_classifier{merge_doe_name}.pt')
+
+
+    return merge_doe_name
+
+
 
 def train_merge_team(groups, is_doe, decompose_id, buffer_dir):
-
-    # for index, group in enumerate(groups):
-    #     globals()[f'group_{index}'] = group
 
     team_structure = {
         "total_members": 0,
@@ -178,14 +228,28 @@ def train_merge_team(groups, is_doe, decompose_id, buffer_dir):
         #   - 3
         #   - 4
 
+    """
+    To LZH:
+    这里需要考虑加相对路径，修改 template file path 的位置，以及template可以换成ia2c
+    """
 
-    # 读取 ia2c_ns.yaml 作为模板
+    """
+    Todo QD
+    做一个cls doe pt文件的读取的merge，以及save为新的pt，保存路径，把merge后cls路径写入参数，用于run
+    为了方便创建 doe merge，还是要先创建 cfg，再去run里面合并？但是这样load
+    """
+
+    # merge的地址，保存到cfg参数
+    merged_doe_name = merge_doe_cls(groups)
+    cfg.load_doe_path = merged_doe_name
+
+
+    # 读取 ia2c_ns.yaml 作为模板,也可以用ia2c
     template_file_path = 'GRF_SUBTASK/doe_epymarl-main/src/config/algs/ia2c_ns.yaml'
     with open(template_file_path, 'r', encoding='utf-8') as template_file:
         template_data = yaml.safe_load(template_file)
 
     # 修改模板数据以生成 doe_ia2c.yaml 格式
-    # 这里根据需要修改参数为doe
     template_data['mac'] = "doe_mac"  # 修改 mac
     template_data['target_update_interval_or_tau'] = 0.01  # 修改更新间隔
     template_data['learner'] = "doe_ia2c_learner"  # 修改学习器
@@ -206,10 +270,10 @@ def train_merge_team(groups, is_doe, decompose_id, buffer_dir):
         "doe_classifier_cfg": {
             "doe_type": "mlp",
             "load_mode": "train",
-            "save_classifier": True,
+            "save_classifier": True,  # 首次训练没有doe，不用save，不过这里已经是merge阶段，而且使用doe，那么肯定要true
             "load_doe_buffer_path": buffer_dir,
-            "save_pathname": "mlp_classifier.pt",
-            "path_to_classifier": "mlp_classifier.pt",
+            "save_doe_name": "save_mlp_classifier.pt",
+            "load_doe_name": "load_mlp_classifier.pt",
             "mlp": {
                 "hidden_sizes": [128],
                 "batch_size": 512,
@@ -231,36 +295,37 @@ def train_merge_team(groups, is_doe, decompose_id, buffer_dir):
 
     print(f"New DOE YAML File {doe_config_name}")
 
+    """本来考虑merge buffer再用于train doe cls，现在通过修改run中的加载doe逻辑，直接在每次训练中save cls和merge cls，不用再对齐buffer数据维度"""
+    # # 处理buffer合并，用于doe training
+    # """这里相对路径要修改"""
+    # from components.episode_buffer import ReplayBuffer
 
-    # 处理buffer合并，用于doe training
-    from components.episode_buffer import ReplayBuffer
+    # # 加载两个 buffer
+    # # buffer_dir = 'GRF_SUBTASK/doe_epymarl-main/results/buffer/grf'
+    # buffer1 = torch.load(buffer_dir+'/buffer1.pt')
+    # buffer2 = torch.load(buffer_dir+'/buffer2.pt')
 
-    # 加载两个 buffer
-    # buffer_dir = 'GRF_SUBTASK/doe_epymarl-main/results/buffer/grf'
-    buffer1 = torch.load(buffer_dir+'/buffer1.pt')
-    buffer2 = torch.load(buffer_dir+'/buffer2.pt')
-
-    total_agents = team_structure['total_members']  # 总团队的 agent 数量
-    doe_buffer = ReplayBuffer(scheme=buffer1.scheme, 
-                            groups={**buffer1.groups, **buffer2.groups}, 
-                            buffer_size=total_agents, 
-                            max_seq_length=buffer1.max_seq_length)
+    # total_agents = team_structure['total_members']  # 总团队的 agent 数量
+    # doe_buffer = ReplayBuffer(scheme=buffer1.scheme, 
+    #                         groups={**buffer1.groups, **buffer2.groups}, 
+    #                         buffer_size=total_agents, 
+    #                         max_seq_length=buffer1.max_seq_length)
     
-    # 将 buffer1 的数据插入到新的 buffer 中
-    doe_buffer.insert_episode_batch(buffer1)
+    # # 将 buffer1 的数据插入到新的 buffer 中
+    # doe_buffer.insert_episode_batch(buffer1)
 
-    # 调整 buffer2 的 agent ID
-    adjusted_buffer2_data = {}
-    for key in buffer2.data.transition_data.keys():
-        adjusted_buffer2_data[key] = buffer2.data.transition_data[key].clone()
-        """这里需要调整所有的key id"""
-        if key == "actions":  # 假设 actions 需要调整
-            adjusted_buffer2_data[key] += buffer1.groups["team_1"]  # 将 agent ID 调整
+    # # 调整 buffer2 的 agent ID
+    # adjusted_buffer2_data = {}
+    # for key in buffer2.data.transition_data.keys():
+    #     adjusted_buffer2_data[key] = buffer2.data.transition_data[key].clone()
+    #     """这里需要调整所有的key id"""
+    #     if key == "actions":  # 假设 actions 需要调整
+    #         adjusted_buffer2_data[key] += buffer1.groups["team_1"]  # 将 agent ID 调整
 
-    # 将调整后的 buffer2 数据插入到新的 buffer 中
-    doe_buffer.update(adjusted_buffer2_data, 
-                    slice(doe_buffer.buffer_index, doe_buffer.buffer_index + buffer2.batch_size), 
-                    slice(0, buffer2.max_seq_length))
+    # # 将调整后的 buffer2 数据插入到新的 buffer 中
+    # doe_buffer.update(adjusted_buffer2_data, 
+    #                 slice(doe_buffer.buffer_index, doe_buffer.buffer_index + buffer2.batch_size), 
+    #                 slice(0, buffer2.max_seq_length))
 
 
 
@@ -274,7 +339,7 @@ def train_merge_team(groups, is_doe, decompose_id, buffer_dir):
             script_path = f'{SRC_DIR}/main.py'
             params = [
                 'python', '-u', script_path,
-                f'--config={doe_yaml_file}',
+                f'--config=ia2c_ns',
                 f'--env-config={origin_env_config}',
                 '--is_doe=True'
             ]
@@ -286,7 +351,7 @@ def train_merge_team(groups, is_doe, decompose_id, buffer_dir):
             script_path = f'{SRC_DIR}/main.py'
             params = [
                 'python', '-u', script_path,
-                f'--config={a2c_yaml_file}',
+                f'--config={doe_config_name}',
                 f'--env-config={origin_env_config}',
                 '--is_doe=False'
             ]
@@ -295,7 +360,8 @@ def train_merge_team(groups, is_doe, decompose_id, buffer_dir):
 
     full_rl_training_performance = []
     full_rl_training_performance.append(full_process)
-    save(full_rl_training_performance)
+    # 似乎也不用save一个performance，tensorboard会自动生成的，就是找起来麻烦，要考虑一下logger的file合并
+    # save(full_rl_training_performance)
 
     print('Merged Full Training Has Finished')
 
@@ -847,18 +913,18 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
 
             # 完成了第一个子任务 reward 生成
 
-        # 完成了 所有子任务 reward 生成
-
-        # 完成了所有方案 n decomposition plan 的任务生成，Execute the Main task using w/w. DOE:
-        # decompose_id =  - 1 
-
+        # 完成了 所有子任务 reward 生成，开始train merge team
+        """ 
+        上面第一阶段子任务训练 alg_cfg 需要用 ia2c/ia2c_ns，不能用 doe 干扰RL训练
+        但是需要 save buffer 并得到 doe cls，然后在第二阶段 merge train 时 merge cls
+        这种写法是每个子任务自己的性能提升自己的表现，先用着，以后的研究中再考虑与merge后技能的表现
+        """
         train_merge_team(groups, use_doe, decompose_id=0, buffer_dir='GRF_SUBTASK/doe_epymarl-main/results/buffer/grf')
-        # create idoe yaml config, train with src/main
-        # 这种写法是每个子任务自己的性能提升自己的表现，先用着，后面再考虑与merge后技能的表现
+        
+    # 完成了所有方案 n decomposition plan 的任务生成，Execute the Main task using w/w. DOE:
 
 
-# 这里 alg_cfg 用于训练子任务的team，需要用 ia2c，不能用 doe
-# 额外甚至 merge_doe 来控制是否用 doe 训练 merge 的完整算法
+
 if __name__ == "__main__":
     main(model="gpt-3.5-turbo", n_decomposition=1, n_reward=1, temperature=1, task="gfootball", alg_cfg="ia2c",
          use_doe=True, n_improve_iter=2)

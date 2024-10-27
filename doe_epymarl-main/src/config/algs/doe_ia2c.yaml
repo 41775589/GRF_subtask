@@ -53,8 +53,8 @@ doe_classifier_cfg:
   doe_type: mlp
   load_mode: train
   save_classifier: true
-  save_doe_path: mlp_classifier.pt
-  load_doe_path: mlp_classifier.pt
+  save_doe_name: save_mlp_classifier.pt
+  load_doe_name: load_mlp_classifier.pt
   load_doe_buffer_path: 'GRF_SUBTASK/doe_epymarl-main/results/buffer/grf'
   mlp:
     hidden_sizes:

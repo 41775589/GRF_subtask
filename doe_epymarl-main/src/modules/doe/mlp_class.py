@@ -130,10 +130,11 @@ class MLPClassifier:
         if load_mode == "train":
             classifier = cls.from_config_train(n_agents, cfg, buffer_path)
             if cfg.get("save_classifier", False):
-                classifier.save(cfg.get("save_doe_path"))
+                save_path = os.path.join(buffer_path, cfg.save_doe_name)
+                classifier.save(save_path)
             return classifier
         elif load_mode == "load":
-            return cls.from_config_load(n_agents, cfg)
+            return cls.from_config_load(n_agents, cfg, buffer_path)
 
     @classmethod
     def from_config_train(cls, n_agents, cfg, buffer_path):
@@ -158,6 +159,8 @@ class MLPClassifier:
             raise FileNotFoundError(f"Buffer file not found at {buffer_path}")
         exp_buffers = torch.load(os.path.join(buffer_path, "buffer.pt"))
 
+        """这里写死的buffer.pt，需要配合多层分解重新命名规则"""
+
         # 考虑有时候用episode data而不是transitions,getattr
         transition_data = exp_buffers.transition_data
         obs_data = transition_data["obs"]
@@ -172,7 +175,7 @@ class MLPClassifier:
         obs_mask = mlp_cfg.get("obs_mask", None)
 
         # Load & process the data
-        states = []
+        states = [] 
         labels = [] 
 
         with torch.no_grad():
@@ -235,7 +238,7 @@ class MLPClassifier:
             )
 
     @classmethod
-    def from_config_load(cls, n_agents, cfg):
+    def from_config_load(cls, n_agents, cfg, buffer_path):
         classifier = cls(
             n_agents,
             train_dataloader=None, 
@@ -243,7 +246,8 @@ class MLPClassifier:
             network_arch=None, 
             role_list=None
         )
-        absolute_path = os.path.abspath(cfg.load_doe_path)
+        # absolute_path = os.path.abspath(cfg.load_doe_name)
+        absolute_path = os.path.join(buffer_path, cfg.load_doe_name)
         loaded_mlps = torch.load(absolute_path)
         
         # sanity check
@@ -253,6 +257,21 @@ class MLPClassifier:
         classifier.mlps = loaded_mlps
         return classifier
 
+    """Merge 模式，返回一个空类，用于加载其他doe cls的参数"""
+    @classmethod
+    def from_merge_config(cls, n_agents, role_list):
+        # 创建一个空的 MLPClassifier 实例
+        return cls(
+            n_agents=n_agents,
+            train_dataloader=None,  # 不需要训练数据加载器
+            test_dataloader=None,   # 不需要测试数据加载器
+            network_arch=[0] * 3,   # 可以设置为默认的空网络架构，或根据需要调整
+            role_list=role_list,     # 使用合并后的角色列表
+            learning_rate=1e-2,      # 默认学习率
+            batch_size=256,          # 默认批量大小
+            test_period=5,           # 默认测试周期
+            obs_mask=None             # 根据需要设置
+        )
 
 
 

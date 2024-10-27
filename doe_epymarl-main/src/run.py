@@ -144,23 +144,28 @@ def run_sequential(args, logger):
     learner = le_REGISTRY[args.learner](mac, buffer.scheme, logger, args)
 
 
-    # 创建在训练结束时存储buffer用于DoE的路径
-    buffer_save_path = os.path.join(dirname(dirname(abspath(__file__))), args.local_results_path, "buffers", args.env)
-    os.makedirs(buffer_save_path, exist_ok=True)
-    
-    # # 用于检查doe模块，正式运行时删掉
-    # # 正式训练时，只保存上一轮独立子任务各自的buffer，用于在下一轮merge团队时训练子任务的doe classifier
-    # th.save(buffer.data, "{}/buffer.pt".format(buffer_save_path))
-
-
-
-    # 如果要使用doe，那么加载对应agent的doe，并add到mac、learner
+    # 如果要使用doe，那么加载对应agent的doe cls，并add到mac、learner
+    # doe cls的所有函数都有buffer path，存储和加载都是通过 buffer path + save/load name.pt
+    # buffer path等于所有doe相关的文件夹，可以改名字
     load_doe_buffer_path = args.doe_classifier_cfg.load_doe_buffer_path
-    if args.use_doe and args.load_old_doe:  # 如果使用doe训练，那么在这里load doe cls
+
+    if args.use_doe:  
+        # 如果使用doe训练，那么在这里load doe cls；
+        # 如果是第一次分解，显然不会用doe，也不用load doe cls
+        # 如果是后续分解，不使用doe训练（采用普通merge训练的方法作为baseline），也不需要 load
+
+        """
+        这里要考虑如何实现，merge multi doe classifier, 
+        merge 操作放在 generator_one.py中，把那个cls存到这个path中
+        并且名字要作为参数传入，或者作为args中传入
+        这样可以保证run的逻辑不变，不用必须merge。
+        """
+
+        # 假设已经merge完了，load doe cls "buffer_path/doe_name.pt"
         doe_classifier = doe_classifier_config_loader(
             n_agents=args.n_agents,
             cfg=args.doe_classifier_cfg,  # 本来是args.get("doe_classifier_cfg")，这里args是namespace形式
-            buffer_path = load_doe_buffer_path  # merge buffer load path,
+            buffer_path = load_doe_buffer_path, # merge buffer load path,
             load_mode='load'
         )
         
@@ -172,12 +177,6 @@ def run_sequential(args, logger):
         if hasattr(learner, 'set_doe_classifier'):
             learner.set_doe_classifier(doe_classifier)
         print("DoE_classifier is set to mac and learner")
-
-        """当单层分解时，train doe不需要再save buffer；多层分解时再改这部分"""
-        save_buffer = False
-    else:
-        save_buffer = True
-        # 这里为了配合单层分解，简单设置；如果多层分解的话，需要额外添加参数“save buffer”来控制load cls还是train cls
 
 
     if args.use_cuda:
@@ -302,22 +301,30 @@ def run_sequential(args, logger):
     
     """ Save buffers for DoE Classifier """
     if args.save_buffer:
+        # 创建在训练结束时存储buffer用于DoE的路径
+        # buffer_save_path = load_doe_buffer_path + new exp name
+        buffer_save_path = os.path.join(dirname(dirname(abspath(__file__))), args.local_results_path, "buffers", args.env)
+        os.makedirs(buffer_save_path, exist_ok=True)
+
+        """名字需要重新考虑 group id 方便后续 merge"""
         buffer_save_path_curr = buffer_save_path + f'/group_{group_id}'
         th.save(buffer.data, buffer_save_path_curr)
         logger.console_logger.info(f"Save buffer to {buffer_save_path} for DoE Classifier")
+        # 目前在from config train中，写死的buffer名字为 load bufferpath+buffer.pt，需要改命名
 
     """ Train and Save DoE Classifier """
+    # 直接用上面 buffer save path curr 的位置的 buffer_id.pt 来train
     if args.save_doe_cls:
         doe_classifier = doe_classifier_config_loader(
             n_agents=args.n_agents,
             cfg=args.doe_classifier_cfg,  # 本来是args.get("doe_classifier_cfg")，这里args是namespace形式
-            buffer_path = buffer_save_path_curr  # merge buffer load path,
+            buffer_path = buffer_save_path_curr, # 使用当前保存的 buffer file
             load_mode='train'
         )
+        # from config设置了，如果有save cls，就会按照save name保存cls
+        logger.console_logger.info(f"Save buffer to {buffer_save_path} for DoE Classifier")
+        
 
-        doe_classifier.save
-
-    
     runner.close_env()
     logger.console_logger.info("Finished Training")
 
