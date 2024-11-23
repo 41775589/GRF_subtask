@@ -20,6 +20,7 @@ from __future__ import print_function
 
 import os
 import importlib
+import sys
 
 from gfootball.env import config
 from gfootball.env import football_env
@@ -37,7 +38,8 @@ from gfootball.env import wrappers
 
 def _process_reward_wrappers(env, rewards):
     path = os.path.abspath(__file__)
-    path = os.path.join(os.path.dirname(os.path.dirname(path)), 'scenarios')
+    path = os.path.join(os.path.dirname(os.path.dirname(path)), 'rewards')
+    sys.path.append(path)
     rewards_list = rewards.split(',')
 
     # 保持现有的 'scoring' 检查
@@ -45,11 +47,12 @@ def _process_reward_wrappers(env, rewards):
 
     # 动态加载自定义包装器
     for reward in rewards_list:
-        if reward.startswith('reward_'):  # 自定义包装器的参数以'reward_'开头
+        if reward.strip().startswith("reward"):  # 自定义包装器的参数以'reward_'开头
             wrapper_name = reward.split('_', 1)[1]  # 提取包装器名字 'name_of_wrapper'
+            wrapper_name = wrapper_name.strip()
             try:
                 # 动态导入模块，假设模块名与包装器名相同
-                module = importlib.import_module(f"{path}/reward_{wrapper_name}")
+                module = importlib.import_module(f"gfootball.rewards.reward_{wrapper_name}")
                 # 从模块中获取 CheckpointRewardWrapper 类
                 wrapper_class = getattr(module, 'CheckpointRewardWrapper')
                 # 使用包装器包装环境

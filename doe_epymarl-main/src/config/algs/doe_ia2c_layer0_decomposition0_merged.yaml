@@ -1,0 +1,66 @@
+action_selector: soft_policies
+agent_output_type: pi_logits
+base_ent: 1.0
+base_lr: 1.0
+batch_size: 10
+batch_size_run: 10
+boost_ent_coef: 1.0
+boost_lr_coef: 1.0
+buffer_size: 10
+critic_type: ac_critic
+doe_classifier_cfg:
+  doe_type: mlp
+  load_doe_buffer_path: /home/zihao/zihao/PycharmProjects/GRF_SUBTASK-1118/doe_epymarl-main/results/buffers/gfootball/2024-11-20-15-20-30
+  load_doe_name: doe_ia2c_layer0_decomposition0_merged.pt
+  load_mode: train
+  mlp:
+    batch_size: 512
+    hidden_sizes:
+    - 128
+    learning_rate: 0.01
+    test_fraction: 0.1
+  role_ids:
+    ? The focus for this group is on tactical understanding and defensive maneuvers.
+      They will learn how to position themselves optimally on the field, move efficiently
+      to cover more ground, and intercept or challenge opponents. This group will
+      particularly focus on actions such as moving in all directions, Sliding (for
+      tackling), Sprint and Stop-Sprint (for quick reaction and movement), and Stop-Moving
+      (to maintain strategic positions). Defensive coordination and learning when
+      to engage in Sliding tackles or when to simply contain opponents by strategic
+      positioning will be key here.
+    : - 2
+      - 3
+      - 4
+    ? This group's primary objective is to master individual technical skills. This
+      includes dribbling to navigate through opponents, precision in shooting to effectively
+      score goals, and practicing different passing techniques (Short Pass, High Pass,
+      Long Pass) to maintain possession and create scoring opportunities. The specific
+      focus will be on actions such as Shot, Dribble, Stop-Dribble, and all types
+      of passes.
+    : - 0
+      - 1
+  save_classifier: true
+  save_doe_name: merged_doe_buffer.pt
+doe_type: mlp
+ent_coef: 1.0
+entropy_coef: 0.01
+hidden_dim: 128
+learner: doe_ia2c_learner
+lr: 0.0005
+mac: doe_mac
+mask_before_softmax: true
+name: doe_ia2c
+obs_agent_id: true
+obs_individual_obs: false
+obs_last_action: false
+q_nstep: 5
+runner: parallel
+save_buffer: true
+save_doe_cls: true
+standardise_returns: false
+standardise_rewards: true
+t_max: 1000000
+target_update_interval_or_tau: 0.01
+time_stamp: 2024-11-20-15-20-30
+use_doe: true
+use_rnn: true

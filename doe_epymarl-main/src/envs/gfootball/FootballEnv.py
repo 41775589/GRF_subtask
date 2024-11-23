@@ -82,6 +82,8 @@ class GoogleFootballEnv(MultiAgentEnv):
             actions = _actions
         self.time_step += 1
         obs, rewards, done, infos = self.env.step(actions.tolist())
+        # print("rrrrrr",rewards)
+        # print("iiiiii",infos)
 
         self.obs = obs
 
