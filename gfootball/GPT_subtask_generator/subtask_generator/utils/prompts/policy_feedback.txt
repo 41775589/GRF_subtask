@@ -1,1 +1,2 @@
-We trained a RL policy using the provided reward function code and tracked the values of the individual components in the reward function as well as global policy metrics after every {epoch_freq} epochs, mean values encountered:
+We trained a RL policy using the provided reward function code and tracked the mean values of the individual components in the final reward function as well as the original scoring reward function and the entire final reward function.
+The tracked values and corresponding trained episodes number are listed below:

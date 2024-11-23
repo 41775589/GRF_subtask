@@ -39,6 +39,8 @@ t_max: 20050000
 # DoE Coef
 use_doe: true
 doe_type: "mlp"
+save_buffer: true
+save_doe_cls: true
 
 ent_coef: 1.0 # needed to override the ent_coef called elsewhere
 
@@ -53,8 +55,9 @@ doe_classifier_cfg:
   doe_type: mlp
   load_mode: train
   save_classifier: true
-  save_pathname: mlp_classifier.pt
-  path_to_classifier: mlp_classifier.pt
+  save_doe_name: save_mlp_classifier.pt
+  load_doe_name: load_mlp_classifier.pt
+  load_doe_buffer_path: 'GRF_SUBTASK/doe_epymarl-main/results/buffer/grf'
   mlp:
     hidden_sizes:
       - 128
