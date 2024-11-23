@@ -764,7 +764,6 @@ def main(model, n_decomposition, n_reward, temperature, task, alg_cfg, use_doe, 
                     # # Find the freest GPU to run GPU-accelerated RL
                     # set_freest_gpu()
 
-
                     # """
                     # 这里alg_cfg需要根据分解的子任务，创建对应的doe_ia2c，也就是 doe_classifer_cfg/  
                     #     # 2s3z/3m
