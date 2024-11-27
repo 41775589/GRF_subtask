@@ -106,8 +106,8 @@ def merge_doe_cls(groups, n_agents, role_list, doe_path, merge_doe_name, max_rew
     # 遍历每个组，加载对应的 DoE 分类器
     for group in groups:
         # 构建文件路径, 0_classifier.pt
-        group_id = group["group_number"]
-        max_reward_code_path = max_reward_code_path_for_each_group[f"group{group_id}"].replace("reward", "buffer").replace(".py", ".pt")
+        group_id = group["group_number"] - 1
+        max_reward_code_path = max_reward_code_path_for_each_group[f"group{group_id}"].replace("reward", "cls").replace(".py", ".pt")
         classifier_path = f"{doe_path}/{max_reward_code_path}"
         
         # 加载分类器
@@ -118,28 +118,38 @@ def merge_doe_cls(groups, n_agents, role_list, doe_path, merge_doe_name, max_rew
         if merged_classifier is None:
             # merged_classifier = doe_classifier_config_loader(n_agents, merge_cfg, doe_path, load_mode='merge')
             merged_classifier = copy.deepcopy(classifier_i)
-            merged_classifier.n_agents = n_agents
-            merged_classifier.role_list = role_list
+            merged_classifier["n_agents"] = n_agents
+            merged_classifier["role_list"] = role_list
 
-            for key in vars(merged_classifier).keys():
-                print(key)
+
+            # for key in vars(merged_classifier).keys():
+            #     print(key)
             # 扩展 lr 和 mlps 的数量
-            merged_classifier.learning_rates = [merged_classifier.learning_rates[0]] * n_agents
-            merged_classifier.mlps = [merged_classifier.mlps[0]] * n_agents
+            merged_classifier["learning_rates"] = [merged_classifier["learning_rates"][0]] * n_agents
+            merged_classifier["mlps"] = [merged_classifier["mlps"][0]] * n_agents
 
         # # 确保当前分类器的 mlps 列表长度与合并后的代理数量一致
         # assert classifier.n_agents == len(classifier1.mlps) + len(classifier2.mlps)
 
         # 合并历史分类器的参数到当前分类器中
-        for doe_i in classifier_i.mlps:
-            merged_classifier.mlps[merge_id].load_state_dict(doe_i.state_dict())
+        for doe_i in classifier_i["mlps"]:
+            merged_classifier["mlps"][merge_id].load_state_dict(doe_i.state_dict())
             merge_id += 1
 
-    assert merge_id == n_agents-1
+    assert merge_id == n_agents
     # 保存合并后的分类器
+    print(merged_classifier)
     torch.save(merged_classifier, f'{doe_path}/{merge_doe_name}.pt')
 
 
+# # 处理长文本，确保生成的 YAML 不包含复杂键
+# def normalize_keys(data):
+#     if isinstance(data, dict):
+#         return {str(k): normalize_keys(v) for k, v in data.items()}
+#     elif isinstance(data, list):
+#         return [normalize_keys(i) for i in data]
+#     else:
+#         return data
 
 def train_merge_team(groups, is_doe, layer, decompose_id, buffer_dir, max_reward_code_path_for_each_group, Time):
 
@@ -154,15 +164,16 @@ def train_merge_team(groups, is_doe, layer, decompose_id, buffer_dir, max_reward
 
     # 遍历每个 group，将信息合并
     for group in groups:
-        group_id = group["group_number"]
+        group_id = group["group_number"] - 1
         num_agents = group["number_of_agents"]
         
         # 更新总成员数量
         team_structure["total_members"] += num_agents
+
         
         # 为每个任务分配队员 ID
         task_assignments = {
-            "task": group["training_goal"],
+            "task": f"goal_{group_id}",
             "member_ids": list(range(current_id, current_id + num_agents))
         }
         
@@ -247,8 +258,17 @@ def train_merge_team(groups, is_doe, layer, decompose_id, buffer_dir, max_reward
     # In multi-layer: add current iter and sample and this layer and this decomposed id to save for the father training
     save_current_layer_merged_doe_path = f"merged_doe_buffer"
 
+    # role_ids_normalized = normalize_keys(role_ids)
+
     # 添加 DoE 相关参数
     doe_params = {
+        # In multi-layer: add current iter and sample and this layer and this decomposed id to save for the father training
+        "layer_id": "target",
+        "decomposition_id": decompose_id,
+        "group_id": "target",
+        "iter_id": "target",
+        "sample_id": "target",
+        #################################################
         "use_doe": True,
         "time_stamp": Time,
         "doe_type": "mlp",
@@ -330,16 +350,19 @@ def train_merge_team(groups, is_doe, layer, decompose_id, buffer_dir, max_reward
     origin_env_config = "gfootball"
 
     if is_doe:
+        print("1111111111111111111111111111111")
         rl_logpath = f"full_training_depth_1_{origin_env_config}_doe.txt"
+        print(f'--config={merged_doe_config_name}')
+        print(f'--env-config={origin_env_config}')
         with open(rl_logpath, 'w') as f:
             script_path = f'{SRC_DIR}/main.py'
             params = [
                 'python', '-u', script_path,
                 f'--config={merged_doe_config_name}',
                 f'--env-config={origin_env_config}',
-                '--is_doe=True'
             ]
             full_process = subprocess.Popen(params, stdout=f, stderr=f)
+            full_process.wait()
         # block_until_training(rl_logpath, log_status=True, iter_num=iter, response_id=response_id)
     else:
         rl_logpath = f"full_training_depth_1_{origin_env_config}.txt"
@@ -349,9 +372,9 @@ def train_merge_team(groups, is_doe, layer, decompose_id, buffer_dir, max_reward
                 'python', '-u', script_path,
                 f'--config={template_config_name}',
                 f'--env-config={origin_env_config}',
-                '--is_doe=False'
             ]
             full_process = subprocess.Popen(params, stdout=f, stderr=f)
+            full_process.wait()
         # block_until_training(rl_logpath, log_status=True, iter_num=iter, response_id=response_id)
 
     full_rl_training_performance = []
@@ -389,18 +412,18 @@ use_doe=True
 groups = []
 group_info_1 = {
             "group_number": 1,
-            "number_of_agents": 3,
+            "number_of_agents": 2,
             "training_goal": "Mastering ball control and development of passing accuracy. This group will focus on maintaining possession by effectively using the dribble, executing short and long passes, and responding defensively when required. Key actions to train include Dribble, Stop-Dribble, Short Pass, Long Pass, and defensive maneuvres like Sliding."
         }
 group_info_2 = {
     "group_number": 2,
-    "number_of_agents": 2,
+    "number_of_agents": 3,
     "training_goal": "Focused on creating and exploiting scoring opportunities. Agents in this group should learn to optimally position themselves, decide when to engage in sprints to outmaneuver opponents, and perform effective shooting. Primary actions include Shot, Sprint, Stop-Sprint, High Pass (for crosses), and mastering the timing for offensive moves."
 }
 groups.append(group_info_1)
 groups.append(group_info_2)
 max_reward_code_path_for_each_group={"group0":'reward_layer0_decomposition0_subtask0_iter0_sample0.py',"group1":'reward_layer0_decomposition0_subtask1_iter0_sample0.py'}
-train_merge_team(groups, use_doe, layer=0, decompose_id=0, buffer_dir=f'{FOOTBALL_MEDoE_DIR}/doe_epymarl-main/results/buffers/gfootball/2024-11-20-03-39-23', max_reward_code_path_for_each_group=max_reward_code_path_for_each_group, Time=Time)
+train_merge_team(groups, use_doe, layer=0, decompose_id=0, buffer_dir=f'{FOOTBALL_MEDoE_DIR}/doe_epymarl-main/results/buffers/gfootball/2024-11-27-01-31-39', max_reward_code_path_for_each_group=max_reward_code_path_for_each_group, Time='2024-11-27-01-31-39')
 
 
 

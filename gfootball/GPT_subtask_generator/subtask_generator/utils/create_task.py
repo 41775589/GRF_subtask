@@ -58,6 +58,8 @@ def create_train_cfg(root_dir, Time, algs_name, layer, response_id, response_r_i
     for i in range(num_agents):
         data["doe_classifier_cfg"]["role_ids"]['task'].append(i)
 
+    data["doe_classifier_cfg"]["save_doe_name"] = f"cls_layer{layer}_decomposition{response_id}_subtask{group_id}_iter{iter}_sample{response_r_id}.pt"
+
 
     # Write the new YAML file
     with open(output_file, 'w') as new_yamlfile:
